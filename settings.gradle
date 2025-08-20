@@ -1,0 +1,3 @@
+rootProject.name = 'LeetCodeCopy'
+include 'domain'
+
