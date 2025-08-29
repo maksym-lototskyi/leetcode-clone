@@ -1,4 +1,4 @@
-package org.example.domain.model.task;
+package org.example.domain.model.topic;
 
 public record Topic (String value){
     public Topic {
