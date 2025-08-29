@@ -1,3 +1,4 @@
 rootProject.name = 'LeetCodeCopy'
 include 'domain'
+include 'application'
 
