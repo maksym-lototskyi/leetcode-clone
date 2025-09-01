@@ -1,6 +1,6 @@
 package org.example.application.language.ports.out;
 
-import org.example.domain.model.language.Language;
+import org.example.domain.language.Language;
 
 import java.util.Optional;
 

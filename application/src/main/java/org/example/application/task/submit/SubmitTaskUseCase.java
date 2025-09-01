@@ -2,20 +2,19 @@ package org.example.application.task.submit;
 
 import org.example.application.exception.NotFoundException;
 import org.example.application.language.ports.out.LanguageRepository;
-import org.example.application.task.ports.out.SubmissionRepository;
+import org.example.application.submission.ports.out.SubmissionRepository;
 import org.example.application.task.ports.out.TaskRepository;
-import org.example.application.task.ports.out.TaskRunner;
 import org.example.application.task.ports.out.TestCaseRepository;
-import org.example.domain.model.language.Language;
-import org.example.domain.model.submission.Submission;
-import org.example.domain.model.submission.SubmissionResult;
-import org.example.domain.model.task.Task;
-import org.example.domain.model.task.TaskId;
-import org.example.domain.model.task.test_case.TestCase;
-
+import org.example.domain.language.Language;
+import org.example.domain.submission.Submission;
+import org.example.domain.submission.SubmissionResult;
+import org.example.domain.submission.TestRun;
+import org.example.domain.task.Task;
+import org.example.domain.task.TaskId;
+import org.example.domain.task.TestCase;
 import java.util.List;
 
-public class SubmitTaskUseCase {
+public class SubmitTaskUseCase implements SubmitTaskInputBoundary{
     private final TaskRepository taskRepository;
     private final TestCaseRepository testCaseRepository;
     private final SubmissionRepository submissionRepository;
@@ -51,25 +50,30 @@ public class SubmitTaskUseCase {
         long totalExecutionTime = 0;
         long totalMemoryUsed = 0;
 
+        int passedTestCases = 0;
+
         for (TestCase testCase : testCases) {
             var runResult = taskRunner.run(CommandMapper.map(testCase, language.getRuntimeImage(), code));
 
+            TestRun failingTestCase = TestRun.failing(testCase.getTestCaseId(), runResult.actualOutput());
+
             if (!runResult.isPassed()) {
-                return SubmissionResult.wrongAnswer(testCase.getInput());
+                return SubmissionResult.wrongAnswer(failingTestCase, passedTestCases, testCases.size());
             }
 
             if (runResult.executionTimeMs() > task.timeLimitMs()) {
-                return SubmissionResult.timeLimitExceeded(testCase.getInput());
+                return SubmissionResult.timeLimitExceeded(failingTestCase, passedTestCases, testCases.size());
             }
 
             if (runResult.memoryUsageKb() > task.memoryLimitKb()) {
-                return SubmissionResult.memoryLimitExceeded(testCase.getInput());
+                return SubmissionResult.memoryLimitExceeded(failingTestCase, passedTestCases, testCases.size());
             }
 
             totalExecutionTime += runResult.executionTimeMs();
             totalMemoryUsed = Math.max(totalMemoryUsed, runResult.memoryUsageKb());
+            passedTestCases++;
         }
 
-        return SubmissionResult.accepted(totalExecutionTime, totalMemoryUsed);
+        return SubmissionResult.accepted(totalExecutionTime, totalMemoryUsed, passedTestCases, testCases.size());
     }
 }

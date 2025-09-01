@@ -1,6 +1,6 @@
 package org.example.application.task.submit;
 
-import org.example.domain.model.task.test_case.TestCase;
+import org.example.domain.task.TestCase;
 
 class CommandMapper {
     static RunTestCaseCommand map(TestCase testCase, String languageImage, String code){
