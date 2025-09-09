@@ -1,10 +1,12 @@
-package org.example.application.task.submit;
+package org.example.application.task.use_cases.submit;
 
 import org.example.application.exception.NotFoundException;
 import org.example.application.language.ports.out.LanguageRepository;
 import org.example.application.submission.ports.out.SubmissionRepository;
 import org.example.application.task.ports.out.TaskRepository;
 import org.example.application.task.ports.out.TestCaseRepository;
+import org.example.application.task.use_cases.run.InputParser;
+import org.example.application.task.use_cases.run.TestRunner;
 import org.example.domain.language.Language;
 import org.example.domain.submission.Submission;
 import org.example.domain.submission.SubmissionResult;
@@ -19,14 +21,16 @@ public class SubmitTaskUseCase implements SubmitTaskInputBoundary{
     private final TestCaseRepository testCaseRepository;
     private final SubmissionRepository submissionRepository;
     private final LanguageRepository languageRepository;
-    private final TaskRunner taskRunner;
+    private final TestRunner taskRunner;
+    private final InputParser parser;
 
-    public SubmitTaskUseCase(TaskRepository taskRepository, TestCaseRepository testCaseRepository, SubmissionRepository submissionRepository, LanguageRepository languageRepository, TaskRunner taskRunner) {
+    public SubmitTaskUseCase(TaskRepository taskRepository, TestCaseRepository testCaseRepository, SubmissionRepository submissionRepository, LanguageRepository languageRepository, TestRunner taskRunner, InputParser parser) {
         this.taskRepository = taskRepository;
         this.testCaseRepository = testCaseRepository;
         this.submissionRepository = submissionRepository;
         this.languageRepository = languageRepository;
         this.taskRunner = taskRunner;
+        this.parser = parser;
     }
 
     public void execute(SubmitTaskCommand command) {
@@ -35,9 +39,9 @@ public class SubmitTaskUseCase implements SubmitTaskInputBoundary{
 
         Language language = languageRepository.findByName(command.language())
                 .orElseThrow(() -> new NotFoundException("Language not found with name: " + command.language()));
-        List<TestCase> testCases = testCaseRepository.findAllByTaskId(task.taskId());
+        List<TestCase> testCases = testCaseRepository.findAllByTaskId(task.getTaskId());
 
-        Submission submission = new Submission(task.taskId(), language.getId(), command.sourceCode());
+        Submission submission = new Submission(task.getTaskId(), language.getId(), command.sourceCode());
         submissionRepository.save(submission);
 
         SubmissionResult result = evaluateTestCases(testCases, task, language, command.sourceCode());
@@ -53,21 +57,30 @@ public class SubmitTaskUseCase implements SubmitTaskInputBoundary{
         int passedTestCases = 0;
 
         for (TestCase testCase : testCases) {
-            var runResult = taskRunner.run(CommandMapper.map(testCase, language.getRuntimeImage(), code));
+            var runResult = taskRunner.run(parser.parse(task.getTaskSignature(), testCase.input().params()), code, language.getRuntimeImage());
 
-            TestRun failingTestCase = TestRun.failing(testCase.getTestCaseId(), runResult.actualOutput());
+            TestRun failingTestCase = TestRun.failing(testCase.testCaseId(), runResult.output());
 
-            if (!runResult.isPassed()) {
+            if (!runResult.output().equals(testCase.expectedOutput().value()))
                 return SubmissionResult.wrongAnswer(failingTestCase, passedTestCases, testCases.size());
-            }
 
-            if (runResult.executionTimeMs() > task.timeLimitMs()) {
+            if (runResult.executionTimeMs() > task.getTimeLimitMs())
                 return SubmissionResult.timeLimitExceeded(failingTestCase, passedTestCases, testCases.size());
-            }
 
-            if (runResult.memoryUsageKb() > task.memoryLimitKb()) {
+            if (runResult.memoryUsageKb() > task.getMemoryLimitKb())
                 return SubmissionResult.memoryLimitExceeded(failingTestCase, passedTestCases, testCases.size());
-            }
+
+
+            switch (runResult.errorType()) {
+                case COMPILATION_ERROR -> {
+                    return SubmissionResult.compileError(runResult.error(), passedTestCases, testCases.size());
+                }
+                case RUNTIME_ERROR -> {
+                    return SubmissionResult.runtimeError(runResult.error(), passedTestCases, testCases.size());
+                }
+                case null -> {}
+            };
+
 
             totalExecutionTime += runResult.executionTimeMs();
             totalMemoryUsed = Math.max(totalMemoryUsed, runResult.memoryUsageKb());

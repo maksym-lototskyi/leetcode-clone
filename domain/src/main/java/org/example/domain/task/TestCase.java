@@ -2,24 +2,18 @@ package org.example.domain.task;
 
 import lombok.Getter;
 
+import java.util.Objects;
+
 @Getter
-public class TestCase {
-    private final TestCaseId testCaseId;
-    private final TaskId taskId;
-    private final Input input;
-    private final Output expectedOutput;
+public record TestCase(TestCaseId testCaseId, TaskId taskId, Input input, Output expectedOutput) {
+    public TestCase{
+        Objects.requireNonNull(testCaseId, "TestCaseId cannot be null");
+        Objects.requireNonNull(taskId, "TaskId cannot be null");
+        Objects.requireNonNull(input, "Input cannot be null");
+        Objects.requireNonNull(expectedOutput, "ExpectedOutput cannot be null");
+    }
 
-    TestCase(TaskId taskId, Input input, Output expectedOutput){
-        this.testCaseId = TestCaseId.generate();
-        this.taskId = taskId;
-        this.input = input;
-        this.expectedOutput = expectedOutput;
-
-        if(taskId == null){
-            throw new IllegalArgumentException("TaskId cannot be null");
-        }
-        if(input == null || expectedOutput == null){
-            throw new IllegalArgumentException("Input and expected output cannot be null");
-        }
+    public static TestCase create(TaskId taskId, Input input, Output expectedOutput) {
+        return new TestCase(TestCaseId.generate(), taskId, input, expectedOutput);
     }
 }

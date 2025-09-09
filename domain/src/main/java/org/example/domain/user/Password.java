@@ -1,7 +1,6 @@
 package org.example.domain.user;
 
 import lombok.Getter;
-import org.example.domain.service.PasswordHasher;
 
 @Getter
 public final class Password{

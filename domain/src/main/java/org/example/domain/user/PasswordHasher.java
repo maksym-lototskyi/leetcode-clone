@@ -1,4 +1,4 @@
-package org.example.domain.service;
+package org.example.domain.user;
 
 public interface PasswordHasher {
     String hash(String password);
