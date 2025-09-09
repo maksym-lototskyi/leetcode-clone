@@ -5,7 +5,7 @@ public record TaskDescription(String value) {
         if (value == null) {
             throw new IllegalArgumentException("Task description cannot be null");
         }
-        if (value.length() > 1000) {
+        if (value.length() > 2000) {
             throw new IllegalArgumentException("Task description cannot exceed 1000 characters");
         }
     }

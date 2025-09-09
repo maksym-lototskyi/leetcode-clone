@@ -1,4 +1,4 @@
-package org.example.application.task.submit;
+package org.example.application.task.use_cases.submit;
 
 import java.util.UUID;
 

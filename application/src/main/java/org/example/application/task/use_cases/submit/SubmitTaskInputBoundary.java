@@ -1,4 +1,4 @@
-package org.example.application.task.submit;
+package org.example.application.task.use_cases.submit;
 
 public interface SubmitTaskInputBoundary {
     void execute(SubmitTaskCommand submitTaskCommand);
