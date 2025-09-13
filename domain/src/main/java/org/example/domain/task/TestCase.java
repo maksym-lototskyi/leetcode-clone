@@ -4,7 +4,6 @@ import lombok.Getter;
 
 import java.util.Objects;
 
-@Getter
 public record TestCase(TestCaseId testCaseId, TaskId taskId, Input input, Output expectedOutput) {
     public TestCase{
         Objects.requireNonNull(testCaseId, "TestCaseId cannot be null");

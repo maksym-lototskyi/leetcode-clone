@@ -3,6 +3,10 @@ import java.util.List;
 import java.util.UUID;
 
 public record CreateTaskCommand(
+        String functionName,
+        List<String> parameterNames,
+        List<String> parameterTypes,
+        String returnType,
         String description,
         String taskLevel,
         List<UUID> topicIds,

@@ -7,6 +7,9 @@ public record TestRunResult(
         long executionTimeMs,
         long memoryUsageKb
 ) {
+    public static TestRunResult success(String output, long executionTimeMs, long memoryUsageKb) {
+        return new TestRunResult(output, null, null, executionTimeMs, memoryUsageKb);
+    }
     public static TestRunResult runtimeError(String error, long executionTimeMs, long memoryUsageKb) {
         return new TestRunResult(null, error, ErrorType.RUNTIME_ERROR, executionTimeMs, memoryUsageKb);
     }

@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface TestCaseRepository {
     List<TestCase> findAllByTaskId(TaskId taskId);
+    TestCase save(TestCase testCase);
+    boolean existsByTaskId(TaskId taskId);
 }

@@ -1,8 +1,8 @@
 package org.example.domain.task;
 import lombok.Getter;
-import org.example.domain.language.LanguageId;
 import org.example.domain.topic.Topic;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,8 +17,10 @@ public class Task {
     private final List<Constraint> constraints;
     private long timeLimitMs;
     private long memoryLimitKb;
+    private WorkingSolution workingSolution;
+    private final List<Example> examples;
 
-    private Task(TaskId taskId, TaskSignature taskSignature, TaskDescription taskDescription, TaskLevel taskLevel, TaskStatus status, List<Topic> topics, List<Constraint> constraints, long timeLimitMs, long memoryLimitKb) {
+    public Task(TaskId taskId, TaskSignature taskSignature, TaskDescription taskDescription, TaskLevel taskLevel, TaskStatus status, List<Topic> topics, List<Constraint> constraints, long timeLimitMs, long memoryLimitKb, WorkingSolution workingSolution, List<Example> examples) {
         Objects.requireNonNull(taskId, "TaskId cannot be null");
         Objects.requireNonNull(taskDescription, "Task description cannot be null");
         Objects.requireNonNull(taskLevel, "Task level cannot be null");
@@ -34,6 +36,7 @@ public class Task {
         if (constraints == null || constraints.isEmpty()) {
             throw new IllegalArgumentException("Constraints cannot be null or empty");
         }
+
         this.taskId = taskId;
         this.taskDescription = taskDescription;
         this.taskLevel = taskLevel;
@@ -43,9 +46,23 @@ public class Task {
         this.topics = List.copyOf(topics);
         this.constraints = List.copyOf(constraints);
         this.taskSignature = taskSignature;
+        this.workingSolution = workingSolution;
+        this.examples = new ArrayList<>(examples != null ? examples : new ArrayList<>());
     }
 
-    public void publish(){
+    public void publish(List<TestCase> testCases){
+        if(testCases == null || testCases.isEmpty()) {
+            throw new IllegalStateException("Can not publish task without test cases");
+        }
+        if(this.status != TaskStatus.DRAFT){
+            throw new IllegalStateException("Only tasks in DRAFT status can be published");
+        }
+        if(this.workingSolution == null){
+            throw new IllegalStateException("Cannot publish task without a working solution");
+        }
+        if(this.examples == null || this.examples.isEmpty()){
+            throw new IllegalStateException("Cannot publish task without at least one example");
+        }
         this.status = TaskStatus.PUBLISHED;
     }
 
@@ -60,19 +77,25 @@ public class Task {
     }
 
     public static Task draft(TaskSignature taskSignature, TaskDescription taskDescription, TaskLevel taskLevel, List<Topic> topics, List<Constraint> constraints, long timeLimitMs, long memoryLimitKb) {
-        return new Task(TaskId.generate(), taskSignature, taskDescription, taskLevel, TaskStatus.DRAFT, topics, constraints, timeLimitMs, memoryLimitKb);
+        return new Task(TaskId.generate(), taskSignature, taskDescription, taskLevel, TaskStatus.DRAFT, topics, constraints, timeLimitMs, memoryLimitKb, null, null);
     }
 
-    public TestCase addTestCase(Input input, Output output) {
-        return TestCase.create(this.taskId, input, output);
+    public void addExample(Input input, Output output, String explanation) {
+        examples.add(Example.create(this.taskId, input, output, explanation));
     }
 
-    public Example addExample(Input input, Output output, String explanation) {
-        return Example.create(this.taskId, input, output, explanation);
+    public List<Example> getExamples() {
+        return List.copyOf(examples);
+    }
+    public List<Constraint> getConstraints() {
+        return List.copyOf(constraints);
+    }
+    public List<Topic> getTopics() {
+        return List.copyOf(topics);
     }
 
-    public WorkingSolution addWorkingSolution(String sourceCode, LanguageId language) {
-        return new WorkingSolution(this.taskId, language, sourceCode);
+    public void addWorkingSolution(WorkingSolution workingSolution) {
+        this.workingSolution = workingSolution;
     }
     public record Constraint(String description) {
         public Constraint {

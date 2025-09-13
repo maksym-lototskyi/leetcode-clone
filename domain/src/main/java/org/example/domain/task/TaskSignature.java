@@ -21,5 +21,9 @@ public record TaskSignature(
         Objects.requireNonNull(returnType, "Return type cannot be null");
         if (parameters.isEmpty()) throw new IllegalArgumentException("There must be at least one parameter");
     }
+
+    public static TaskSignature of(String functionName, List<Parameter> parameters, String returnType) {
+        return new TaskSignature(functionName, parameters, returnType);
+    }
 }
 
