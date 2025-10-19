@@ -26,6 +26,11 @@ public class TestTaskRepository implements TaskRepository {
     }
 
     @Override
+    public List<TaskSummary> findTaskSummaries(int pageNumber, int pageSize) {
+        return null;
+    }
+
+    @Override
     public Task save(Task task) {
         return null;
     }
