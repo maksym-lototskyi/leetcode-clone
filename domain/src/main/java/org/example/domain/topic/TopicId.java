@@ -12,4 +12,11 @@ public record TopicId(UUID value) {
     public static TopicId generate() {
         return new TopicId(UUID.randomUUID());
     }
+
+    public static TopicId of(UUID value) {
+        if (value == null) {
+            throw new IllegalArgumentException("TopicId value cannot be null");
+        }
+        return new TopicId(value);
+    }
 }

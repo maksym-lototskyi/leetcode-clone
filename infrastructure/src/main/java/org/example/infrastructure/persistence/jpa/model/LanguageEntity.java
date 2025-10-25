@@ -21,7 +21,5 @@ public class LanguageEntity {
     private String version;
     @Column(nullable = false)
     private String runtimeImage;
-    @OneToOne
-    private WorkingSolutionEntity workingSolution;
 
 }

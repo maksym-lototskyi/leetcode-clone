@@ -6,26 +6,31 @@ import lombok.Getter;
 public final class Language {
     private final LanguageId id;
     private final String name;
-    private String version;
-    private String runtimeImage;
+    private Version version;
+    private RuntimeImage runtimeImage;
 
-    public Language(String name, String version, String runtimeImage) {
+    public Language(LanguageId languageId, String name, Version version, RuntimeImage runtimeImage) {
         if (name == null || name.isBlank()) throw new IllegalArgumentException("Name cannot be null or blank");
-        if (version == null || version.isBlank()) throw new IllegalArgumentException("Version cannot be null or blank");
-        if (runtimeImage == null || runtimeImage.isBlank()) throw new IllegalArgumentException("Runtime image cannot be null or blank");
+        if (version == null) throw new IllegalArgumentException("Version cannot be null");
+        if (runtimeImage == null) throw new IllegalArgumentException("Runtime image cannot be null or blank");
+        if(languageId == null) throw new IllegalArgumentException("Language id cannot be null");
 
-        this.id = LanguageId.generate();
+        this.id = languageId;
         this.name = name;
         this.version = version;
         this.runtimeImage = runtimeImage;
     }
 
-    public void updateVersion(String version) {
-        if (version == null || version.isBlank()) throw new IllegalArgumentException("Version cannot be null or blank");
+    public static Language create(String name, Version version, RuntimeImage runtimeImage) {
+        return new Language(LanguageId.generate(), name, version, runtimeImage);
+    }
+
+    public void updateVersion(Version version) {
+        if (version == null) throw new IllegalArgumentException("Version cannot be null");
         this.version = version;
     }
-    public void updateRuntimeImage(String runtimeImage) {
-        if (runtimeImage == null || runtimeImage.isBlank()) throw new IllegalArgumentException("Runtime image cannot be null or blank");
+    public void updateRuntimeImage(RuntimeImage runtimeImage) {
+        if (runtimeImage == null) throw new IllegalArgumentException("Runtime image cannot be null");
         this.runtimeImage = runtimeImage;
     }
 }

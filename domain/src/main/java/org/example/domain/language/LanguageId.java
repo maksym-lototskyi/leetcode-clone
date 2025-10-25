@@ -11,4 +11,8 @@ public record LanguageId(UUID value) {
             throw new IllegalArgumentException("LanguageId cannot be null");
         }
     }
+
+    public static LanguageId of(UUID id) {
+        return new LanguageId(id);
+    }
 }

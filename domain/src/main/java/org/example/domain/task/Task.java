@@ -11,6 +11,7 @@ import java.util.Objects;
 public class Task {
     private final TaskId taskId;
     private final TaskSignature taskSignature;
+    private final String title;
     private final TaskDescription taskDescription;
     private final TaskLevel taskLevel;
     private TaskStatus status;
@@ -22,12 +23,14 @@ public class Task {
     private final List<Example> examples;
     private final List<TestCase> testCases;
 
-    public Task(TaskId taskId, TaskSignature taskSignature, TaskDescription taskDescription, TaskLevel taskLevel, TaskStatus status, List<Topic> topics, List<Constraint> constraints, long timeLimitMs, long memoryLimitKb, WorkingSolution workingSolution, List<Example> examples, List<TestCase> testCases) {
+    public Task(TaskId taskId, TaskSignature taskSignature, String title, TaskDescription taskDescription, TaskLevel taskLevel, TaskStatus status, List<Topic> topics, List<Constraint> constraints, long timeLimitMs, long memoryLimitKb, WorkingSolution workingSolution, List<Example> examples, List<TestCase> testCases) {
         Objects.requireNonNull(taskId, "TaskId cannot be null");
         Objects.requireNonNull(taskDescription, "Task description cannot be null");
         Objects.requireNonNull(taskLevel, "Task level cannot be null");
         Objects.requireNonNull(status);
         Objects.requireNonNull(taskSignature, "Task signature cannot be null");
+
+        if(title == null || title.isEmpty()) throw new IllegalArgumentException("Title cannot be null or empty");
 
         if (timeLimitMs <= 0) throw new IllegalArgumentException("Time limit must be positive");
         if (memoryLimitKb <= 0) throw new IllegalArgumentException("Memory limit must be positive");
@@ -41,6 +44,7 @@ public class Task {
 
         this.taskId = taskId;
         this.taskDescription = taskDescription;
+        this.title = title;
         this.taskLevel = taskLevel;
         this.status = status;
         this.timeLimitMs = timeLimitMs;
@@ -79,8 +83,8 @@ public class Task {
         this.timeLimitMs = newTimeLimitMs;
     }
 
-    public static Task draft(TaskSignature taskSignature, TaskDescription taskDescription, TaskLevel taskLevel, List<Topic> topics, List<Constraint> constraints, long timeLimitMs, long memoryLimitKb) {
-        return new Task(TaskId.generate(), taskSignature, taskDescription, taskLevel, TaskStatus.DRAFT, topics, constraints, timeLimitMs, memoryLimitKb, null, null, null);
+    public static Task draft(TaskSignature taskSignature, String title, TaskDescription taskDescription, TaskLevel taskLevel, List<Topic> topics, List<Constraint> constraints, long timeLimitMs, long memoryLimitKb) {
+        return new Task(TaskId.generate(), taskSignature, title, taskDescription, taskLevel, TaskStatus.DRAFT, topics, constraints, timeLimitMs, memoryLimitKb, null, null, null);
     }
 
     public void addExample(Example example) {

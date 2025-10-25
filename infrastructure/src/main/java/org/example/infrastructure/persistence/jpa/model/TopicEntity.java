@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "topic")
@@ -15,8 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 public class TopicEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
     private String name;
     @ManyToMany(mappedBy = "topics")
     private List<TaskEntity> tasks = new ArrayList<>();

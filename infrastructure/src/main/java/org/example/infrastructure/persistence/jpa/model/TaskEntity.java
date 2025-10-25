@@ -17,20 +17,27 @@ import java.util.UUID;
 @NoArgsConstructor
 public class TaskEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID taskId;
-    @OneToOne(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
-    private TaskSignatureEntity taskSignature;
+
+    @Embedded
+    private TaskSignatureEmbeddable taskSignature;
+
     @Column(nullable = false, length = 2000, columnDefinition = "TEXT")
     private String taskDescription;
+    @Column(nullable = false)
+    private String title;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TaskLevel taskLevel;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TaskStatus taskStatus;
+
     private long timeLimitMs;
     private long memoryLimitKb;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "task_topic",
@@ -38,13 +45,23 @@ public class TaskEntity {
             inverseJoinColumns = @JoinColumn(name = "topic_id")
     )
     private List<TopicEntity> topics;
-    @OneToMany(mappedBy = "task", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ConstraintEntity> constraints;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "task_constraints",
+            joinColumns = @JoinColumn(name = "task_id")
+    )
+
+    @Column(name = "description", nullable = false)
+    private List<String> constraints;
+
     @OneToMany(mappedBy = "task", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExampleEntity> examples;
+
     @OneToMany(mappedBy = "task", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TestCaseEntity> testCases;
-    @OneToOne(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
-    private WorkingSolutionEntity workingSolution;
+
+    @Embedded
+    private WorkingSolutionEmbeddable workingSolution;
 }
 

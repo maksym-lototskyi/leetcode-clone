@@ -44,6 +44,7 @@ class CreateTaskUseCase implements CreateTaskInputBoundary{
                         parameters,
                         command.returnType()
                 ),
+                command.title(),
                 TaskDescription.of(command.description()),
                 TaskLevel.valueOf(command.taskLevel()),
                 topics,

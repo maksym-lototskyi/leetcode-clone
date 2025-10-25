@@ -3,6 +3,7 @@ package org.example.infrastructure.persistence.jpa.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -14,13 +15,17 @@ import java.util.UUID;
 @NoArgsConstructor
 public class TestCaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @Column(nullable = false)
-    private String input;
     @Column(nullable = false)
     private String expectedOutput;
     @ManyToOne
     @JoinColumn(name = "task_id", nullable = false)
     private TaskEntity task;
+    @ElementCollection
+    @CollectionTable(
+            name = "test_case_input",
+            joinColumns = @JoinColumn(name = "test_case_id")
+    )
+    @Column(name = "value", nullable = false)
+    private List<String> inputs;
 }

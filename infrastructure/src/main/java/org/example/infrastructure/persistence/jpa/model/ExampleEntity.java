@@ -15,11 +15,14 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ExampleEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @Column(nullable = false)
-    @Convert(converter = StringListConverter.class)
-    private List<String> input;
+    @ElementCollection
+    @CollectionTable(
+            name = "example_input",
+            joinColumns = @JoinColumn(name = "example_id")
+    )
+    @Column(name = "value", nullable = false)
+    private List<String> inputs;
     @Column(nullable = false)
     private String output;
     private String explanation;
