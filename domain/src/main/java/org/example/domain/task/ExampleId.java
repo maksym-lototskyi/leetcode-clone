@@ -11,4 +11,8 @@ public record ExampleId(UUID value) {
     public static ExampleId generate() {
         return new ExampleId(UUID.randomUUID());
     }
+
+    public static ExampleId of(UUID id) {
+        return new ExampleId(id);
+    }
 }

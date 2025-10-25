@@ -3,7 +3,6 @@ package org.example.application.task.use_cases.add_working_solution;
 import org.example.application.exception.NotFoundException;
 import org.example.application.language.ports.out.LanguageRepository;
 import org.example.application.task.ports.out.TaskRepository;
-import org.example.application.task.ports.out.TestCaseRepository;
 import org.example.domain.language.Language;
 import org.example.domain.task.Task;
 import org.example.domain.task.TaskId;
@@ -15,12 +14,10 @@ import java.util.List;
 
 class AddWorkingSolutionUseCase implements AddWorkingSolutionInputBoundary {
     private final TaskRepository taskRepository;
-    private final TestCaseRepository testCaseRepository;
     private final LanguageRepository repository;
     private final WorkingSolutionValidator validator;
-    AddWorkingSolutionUseCase(TaskRepository taskRepository, TestCaseRepository testCaseRepository, LanguageRepository repository, WorkingSolutionValidator validator) {
+    AddWorkingSolutionUseCase(TaskRepository taskRepository, LanguageRepository repository, WorkingSolutionValidator validator) {
         this.taskRepository = taskRepository;
-        this.testCaseRepository = testCaseRepository;
         this.repository = repository;
         this.validator = validator;
     }
@@ -32,14 +29,14 @@ class AddWorkingSolutionUseCase implements AddWorkingSolutionInputBoundary {
         Language language = repository.findByName(command.programmingLanguage())
                 .orElseThrow(() -> new NotFoundException("Language not found with name: " + command.programmingLanguage()));
 
-        List<TestCase> testCases = testCaseRepository.findAllByTaskId(TaskId.of(command.taskId()));
+        List<TestCase> testCases = task.getTestCases();
 
         if(testCases.isEmpty()) throw new IllegalStateException("Cannot add working solution to task without test cases");
 
         WorkingSolution candidate = new WorkingSolution(command.workingSolutionCode(), language.getRuntimeImage());
         validator.validate(task, candidate, testCases);
 
-        task.addWorkingSolution(candidate);
+        task.addWorkingSolution(candidate, validator);
         taskRepository.save(task);
     }
 }

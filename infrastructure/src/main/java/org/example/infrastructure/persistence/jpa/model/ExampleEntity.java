@@ -1,0 +1,29 @@
+package org.example.infrastructure.persistence.jpa.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@Entity
+@Table(name = "example")
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class ExampleEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+    @Column(nullable = false)
+    @Convert(converter = StringListConverter.class)
+    private List<String> input;
+    @Column(nullable = false)
+    private String output;
+    private String explanation;
+    @ManyToOne
+    @JoinColumn(name = "task_id", nullable = false)
+    private TaskEntity task;
+}

@@ -4,7 +4,6 @@ import org.example.application.exception.NotFoundException;
 import org.example.application.language.ports.out.LanguageRepository;
 import org.example.application.submission.ports.out.SubmissionRepository;
 import org.example.application.task.ports.out.TaskRepository;
-import org.example.application.task.ports.out.TestCaseRepository;
 import org.example.application.task.use_cases.run.InputParser;
 import org.example.application.task.use_cases.run.TestRunner;
 import org.example.application.user.ports.out.UserRepository;
@@ -20,19 +19,17 @@ import org.example.domain.user.UserId;
 import java.util.List;
 import java.util.UUID;
 
-public class SubmitTaskUseCase implements SubmitTaskInputBoundary{
+class SubmitTaskUseCase implements SubmitTaskInputBoundary{
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
-    private final TestCaseRepository testCaseRepository;
     private final SubmissionRepository submissionRepository;
     private final LanguageRepository languageRepository;
     private final TestRunner taskRunner;
     private final InputParser parser;
 
-    public SubmitTaskUseCase(TaskRepository taskRepository, UserRepository userRepository, TestCaseRepository testCaseRepository, SubmissionRepository submissionRepository, LanguageRepository languageRepository, TestRunner taskRunner, InputParser parser) {
+    public SubmitTaskUseCase(TaskRepository taskRepository, UserRepository userRepository, SubmissionRepository submissionRepository, LanguageRepository languageRepository, TestRunner taskRunner, InputParser parser) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
-        this.testCaseRepository = testCaseRepository;
         this.submissionRepository = submissionRepository;
         this.languageRepository = languageRepository;
         this.taskRunner = taskRunner;
@@ -47,7 +44,7 @@ public class SubmitTaskUseCase implements SubmitTaskInputBoundary{
         }
         Language language = languageRepository.findByName(command.language())
                 .orElseThrow(() -> new NotFoundException("Language not found with name: " + command.language()));
-        List<TestCase> testCases = testCaseRepository.findAllByTaskId(task.getTaskId());
+        List<TestCase> testCases = task.getTestCases();
 
         Submission submission = new Submission(task.getTaskId(), UserId.of(userId), language.getId(), command.sourceCode());
         submissionRepository.save(submission);

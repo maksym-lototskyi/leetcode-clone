@@ -1,4 +1,4 @@
-package org.example.application.task.repos;
+package org.example.infrastructure.persistence.jpa.repository;
 
 import org.example.application.language.ports.out.LanguageRepository;
 import org.example.domain.language.Language;
@@ -6,15 +6,14 @@ import org.example.domain.language.LanguageId;
 
 import java.util.Optional;
 
-public class TestLanguageRepository implements LanguageRepository {
-    Language language = new Language("Java", "21", "oracle:21");
+public class JpaLanguageRepository implements LanguageRepository {
     @Override
     public Optional<Language> findByName(String name) {
-        return Optional.of(language);
+        return Optional.empty();
     }
 
     @Override
     public Optional<Language> findById(LanguageId id) {
-        return Optional.of(language);
+        return Optional.empty();
     }
 }

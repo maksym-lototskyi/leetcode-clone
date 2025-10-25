@@ -12,4 +12,8 @@ public record TestCaseId(UUID value) {
     public static TestCaseId generate() {
         return new TestCaseId(UUID.randomUUID());
     }
+
+    public static TestCaseId of(UUID id) {
+        return new TestCaseId(id);
+    }
 }

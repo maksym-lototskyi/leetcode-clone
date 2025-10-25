@@ -1,5 +1,6 @@
 package org.example.domain.task;
 import lombok.Getter;
+import org.example.domain.task.service.WorkingSolutionValidator;
 import org.example.domain.topic.Topic;
 
 import java.util.ArrayList;
@@ -19,8 +20,9 @@ public class Task {
     private long memoryLimitKb;
     private WorkingSolution workingSolution;
     private final List<Example> examples;
+    private final List<TestCase> testCases;
 
-    public Task(TaskId taskId, TaskSignature taskSignature, TaskDescription taskDescription, TaskLevel taskLevel, TaskStatus status, List<Topic> topics, List<Constraint> constraints, long timeLimitMs, long memoryLimitKb, WorkingSolution workingSolution, List<Example> examples) {
+    public Task(TaskId taskId, TaskSignature taskSignature, TaskDescription taskDescription, TaskLevel taskLevel, TaskStatus status, List<Topic> topics, List<Constraint> constraints, long timeLimitMs, long memoryLimitKb, WorkingSolution workingSolution, List<Example> examples, List<TestCase> testCases) {
         Objects.requireNonNull(taskId, "TaskId cannot be null");
         Objects.requireNonNull(taskDescription, "Task description cannot be null");
         Objects.requireNonNull(taskLevel, "Task level cannot be null");
@@ -48,9 +50,10 @@ public class Task {
         this.taskSignature = taskSignature;
         this.workingSolution = workingSolution;
         this.examples = new ArrayList<>(examples != null ? examples : new ArrayList<>());
+        this.testCases = new ArrayList<>(testCases != null ? testCases : new ArrayList<>());
     }
 
-    public void publish(List<TestCase> testCases){
+    public void publish(){
         if(testCases == null || testCases.isEmpty()) {
             throw new IllegalStateException("Can not publish task without test cases");
         }
@@ -77,11 +80,19 @@ public class Task {
     }
 
     public static Task draft(TaskSignature taskSignature, TaskDescription taskDescription, TaskLevel taskLevel, List<Topic> topics, List<Constraint> constraints, long timeLimitMs, long memoryLimitKb) {
-        return new Task(TaskId.generate(), taskSignature, taskDescription, taskLevel, TaskStatus.DRAFT, topics, constraints, timeLimitMs, memoryLimitKb, null, null);
+        return new Task(TaskId.generate(), taskSignature, taskDescription, taskLevel, TaskStatus.DRAFT, topics, constraints, timeLimitMs, memoryLimitKb, null, null, null);
     }
 
-    public void addExample(Input input, Output output, String explanation) {
-        examples.add(Example.create(this.taskId, input, output, explanation));
+    public void addExample(Example example) {
+        examples.add(example);
+    }
+
+    public void addTestCase(TestCase testCase) {
+        testCases.add(testCase);
+    }
+
+    public List<TestCase> getTestCases() {
+        return List.copyOf(testCases);
     }
 
     public List<Example> getExamples() {
@@ -94,7 +105,8 @@ public class Task {
         return List.copyOf(topics);
     }
 
-    public void addWorkingSolution(WorkingSolution workingSolution) {
+    public void addWorkingSolution(WorkingSolution workingSolution, WorkingSolutionValidator validator) {
+        validator.validate(this, workingSolution, getTestCases());
         this.workingSolution = workingSolution;
     }
     public record Constraint(String description) {
