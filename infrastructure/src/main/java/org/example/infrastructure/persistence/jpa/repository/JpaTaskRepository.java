@@ -1,13 +1,16 @@
 package org.example.infrastructure.persistence.jpa.repository;
 
 import org.example.application.task.ports.out.TaskRepository;
+import org.example.domain.language.Language;
 import org.example.domain.task.Task;
 import org.example.domain.task.TaskId;
 import org.example.domain.task.TaskSummary;
 import org.example.domain.task.service.IOValidator;
 import org.example.infrastructure.persistence.jpa.mapper.TaskMapper;
+import org.example.infrastructure.persistence.jpa.model.LanguageEntity;
 import org.example.infrastructure.persistence.jpa.model.TaskEntity;
 import org.example.infrastructure.persistence.jpa.model.TopicEntity;
+import org.example.infrastructure.persistence.jpa.model.WorkingSolutionEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -17,11 +20,13 @@ import java.util.Optional;
 class JpaTaskRepository implements TaskRepository {
     private final JpaTaskEntityRepository jpaTaskEntityRepository;
     private final JpaTopicEntityRepository jpaTopicEntityRepository;
+    private final JpaLanguageEntityRepository jpaLanguageEntityRepository;
     private final IOValidator validator;
 
-    public JpaTaskRepository(JpaTaskEntityRepository jpaTaskEntityRepository, JpaTopicEntityRepository jpaTopicEntityRepository, IOValidator validator) {
+    public JpaTaskRepository(JpaTaskEntityRepository jpaTaskEntityRepository, JpaTopicEntityRepository jpaTopicEntityRepository, JpaLanguageEntityRepository jpaLanguageEntityRepository, IOValidator validator) {
         this.jpaTaskEntityRepository = jpaTaskEntityRepository;
         this.jpaTopicEntityRepository = jpaTopicEntityRepository;
+        this.jpaLanguageEntityRepository = jpaLanguageEntityRepository;
         this.validator = validator;
     }
 
@@ -47,7 +52,17 @@ class JpaTaskRepository implements TaskRepository {
                 .stream()
                 .map(t -> t.topicId().value())
                 .toList());
-        TaskEntity saved = jpaTaskEntityRepository.save(TaskMapper.map(task, topics));
+        WorkingSolutionEntity workingSolution = null;
+        if(task.getWorkingSolution() != null){
+            LanguageEntity language = jpaLanguageEntityRepository.findById(task.getWorkingSolution().languageId().value())
+                    .orElseThrow(() -> new IllegalStateException("Language not found with id: " + task.getWorkingSolution().languageId().value()));
+
+            workingSolution = WorkingSolutionEntity.builder()
+                    .language(language)
+                    .sourceCode(task.getWorkingSolution().sourceCode())
+                    .build();
+        }
+        TaskEntity saved = jpaTaskEntityRepository.save(TaskMapper.map(task, topics, workingSolution));
         return TaskMapper.map(saved, validator);
     }
 }

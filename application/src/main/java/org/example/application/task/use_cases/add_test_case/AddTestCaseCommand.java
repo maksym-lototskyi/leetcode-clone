@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public record AddTestCaseCommand(
         UUID taskId,
-        List<String> input,
+        String input,
         String expectedOutput
 ) {
 }

@@ -8,8 +8,8 @@ public class RunTaskInputBoundaryFactory {
             LanguageRepository languageRepository,
             TaskRepository taskRepository,
             TestRunner testRunner,
-            InputParser parser
+            ObjectConverter converter
     ){
-        return new RunTaskUseCase(languageRepository, taskRepository, testRunner, parser);
+        return new RunTaskUseCase(languageRepository, taskRepository, testRunner, converter);
     }
 }

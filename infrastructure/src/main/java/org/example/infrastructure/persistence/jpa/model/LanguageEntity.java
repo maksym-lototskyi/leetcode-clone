@@ -3,6 +3,7 @@ package org.example.infrastructure.persistence.jpa.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -21,5 +22,9 @@ public class LanguageEntity {
     private String version;
     @Column(nullable = false)
     private String runtimeImage;
+    @Column(nullable = false)
+    private String fileExtension;
+    @OneToMany(mappedBy = "language")
+    private List<WorkingSolutionEntity> workingSolutions;
 
 }

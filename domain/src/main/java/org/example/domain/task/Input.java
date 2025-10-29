@@ -6,25 +6,23 @@ import java.util.List;
 import java.util.Objects;
 
 public final class Input {
-    private final List<String> params;
+    private final String input;
 
-    public Input (List<String> params, IOValidator validator) {
-        Objects.requireNonNull(params, "Input value cannot be null");
+    public Input (String input, IOValidator validator) {
+        this.input = input;
+        Objects.requireNonNull(input, "Input value cannot be null");
         Objects.requireNonNull(validator, "Validator cannot be null");
 
-        if (params.isEmpty()) {
-            throw new IllegalArgumentException("Input value cannot be null");
+        if (input.isEmpty()) {
+            throw new IllegalArgumentException("Input value cannot be empty");
         }
-        for (String value : params) {
-            if (!validator.isValid(value)) {
-                throw new IllegalArgumentException("Invalid format of input data");
-            }
+        if(!validator.isValid(input)) {
+            throw new IllegalArgumentException("Input value is not valid");
         }
-        this.params = List.copyOf(params);
     }
 
-    public List<String> params(){
-        return List.copyOf(params);
+    public String getInput() {
+        return input;
     }
 }
 

@@ -4,7 +4,9 @@ import org.example.application.exception.NotFoundException;
 import org.example.application.language.ports.out.LanguageRepository;
 import org.example.application.submission.ports.out.SubmissionRepository;
 import org.example.application.task.ports.out.TaskRepository;
-import org.example.application.task.use_cases.run.InputParser;
+import org.example.application.task.use_cases.run.ExecutionContext;
+import org.example.application.task.use_cases.run.LanguageDto;
+import org.example.application.task.use_cases.run.ObjectConverter;
 import org.example.application.task.use_cases.run.TestRunner;
 import org.example.application.user.ports.out.UserRepository;
 import org.example.domain.language.Language;
@@ -16,7 +18,9 @@ import org.example.domain.task.TaskId;
 import org.example.domain.task.TestCase;
 import org.example.domain.user.UserId;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 class SubmitTaskUseCase implements SubmitTaskInputBoundary{
@@ -25,18 +29,18 @@ class SubmitTaskUseCase implements SubmitTaskInputBoundary{
     private final SubmissionRepository submissionRepository;
     private final LanguageRepository languageRepository;
     private final TestRunner taskRunner;
-    private final InputParser parser;
+    private final ObjectConverter converter;
 
-    public SubmitTaskUseCase(TaskRepository taskRepository, UserRepository userRepository, SubmissionRepository submissionRepository, LanguageRepository languageRepository, TestRunner taskRunner, InputParser parser) {
+    public SubmitTaskUseCase(TaskRepository taskRepository, UserRepository userRepository, SubmissionRepository submissionRepository, LanguageRepository languageRepository, TestRunner taskRunner, ObjectConverter converter) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.submissionRepository = submissionRepository;
         this.languageRepository = languageRepository;
         this.taskRunner = taskRunner;
-        this.parser = parser;
+        this.converter = converter;
     }
 
-    public void execute(SubmitTaskCommand command, UUID userId) {
+    public void execute(SubmitTaskCommand command, UUID userId) throws IOException {
         Task task = taskRepository.findById(TaskId.of(command.taskId()))
                 .orElseThrow(() -> new NotFoundException("Task not found with id: " + command.taskId()));
         if(!userRepository.existsById(UserId.of(userId))){
@@ -55,14 +59,25 @@ class SubmitTaskUseCase implements SubmitTaskInputBoundary{
         submissionRepository.save(submission);
     }
 
-    private SubmissionResult evaluateTestCases(List<TestCase> testCases, Task task, Language language, String code) {
+    private SubmissionResult evaluateTestCases(List<TestCase> testCases, Task task, Language language, String code) throws IOException {
         long totalExecutionTime = 0;
         long totalMemoryUsed = 0;
 
         int passedTestCases = 0;
 
         for (TestCase testCase : testCases) {
-            var runResult = taskRunner.run(parser.parse(task.getTaskSignature(), testCase.input().params()), code, language.getRuntimeImage());
+            LanguageDto languageDto = new LanguageDto(
+                    language.getName(),
+                    language.getFileExtension(),
+                    language.getRuntimeImage().value()
+            );
+            ExecutionContext context = new ExecutionContext(
+                    code,
+                    testCase.input().getInput(),
+                    converter.convert(task.getTaskSignature()),
+                    Map.of()
+            );
+            var runResult = taskRunner.run(languageDto, context);
 
             TestRun failingTestCase = TestRun.failing(testCase.testCaseId(), runResult.output());
 

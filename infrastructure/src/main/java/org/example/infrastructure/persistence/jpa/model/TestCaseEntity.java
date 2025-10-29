@@ -21,11 +21,6 @@ public class TestCaseEntity {
     @ManyToOne
     @JoinColumn(name = "task_id", nullable = false)
     private TaskEntity task;
-    @ElementCollection
-    @CollectionTable(
-            name = "test_case_input",
-            joinColumns = @JoinColumn(name = "test_case_id")
-    )
-    @Column(name = "value", nullable = false)
-    private List<String> inputs;
+    @Column(nullable = false)
+    private String input;
 }

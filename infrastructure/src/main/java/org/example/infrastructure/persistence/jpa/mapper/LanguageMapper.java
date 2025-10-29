@@ -12,7 +12,8 @@ public class LanguageMapper {
                 LanguageId.of(languageEntity.getId()),
                 languageEntity.getName(),
                 new Version(languageEntity.getVersion()),
-                new RuntimeImage(languageEntity.getRuntimeImage())
+                new RuntimeImage(languageEntity.getRuntimeImage()),
+                languageEntity.getFileExtension()
         );
     }
 
@@ -22,6 +23,7 @@ public class LanguageMapper {
                 .version(language.getVersion().value())
                 .runtimeImage(language.getRuntimeImage().value())
                 .name(language.getName())
+                .fileExtension(language.getFileExtension())
                 .build();
     }
 }

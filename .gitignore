@@ -1,4 +1,6 @@
 .gradle
+.env
+infrastructure/.env
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/

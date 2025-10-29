@@ -6,7 +6,6 @@ import lombok.*;
 import java.util.List;
 
 @Embeddable
-@Builder
 @Getter
 @Setter
 public class TaskSignatureEmbeddable {

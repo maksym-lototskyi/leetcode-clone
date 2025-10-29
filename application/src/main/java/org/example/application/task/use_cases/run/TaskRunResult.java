@@ -5,7 +5,7 @@ import org.example.domain.submission.SubmissionResultStatus;
 import java.util.List;
 
 public record TaskRunResult(
-        List<String> input,
+        String input,
         String expectedOutput,
         String actualOutput,
         boolean isPassed,

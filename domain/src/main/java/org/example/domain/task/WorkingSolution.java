@@ -4,19 +4,19 @@ import org.example.domain.language.LanguageId;
 import org.example.domain.task.service.WorkingSolutionValidator;
 
 public record WorkingSolution(
-    String runtimeImage,
+    LanguageId languageId,
     String sourceCode
 ) {
     public WorkingSolution {
-        if (runtimeImage == null || runtimeImage.isBlank()) {
-            throw new IllegalArgumentException("Runtime image cannot be null or blank");
+        if(languageId == null) {
+            throw new IllegalArgumentException("LanguageId cannot be null");
         }
         if (sourceCode == null || sourceCode.isBlank()) {
             throw new IllegalArgumentException("Source code cannot be null or blank");
         }
     }
 
-    public static WorkingSolution of(String runtimeImage, String sourceCode) {
-        return new WorkingSolution(runtimeImage, sourceCode);
+    public static WorkingSolution of(LanguageId languageId, String sourceCode) {
+        return new WorkingSolution(languageId, sourceCode);
     }
 }

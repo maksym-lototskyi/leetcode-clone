@@ -33,7 +33,7 @@ class AddWorkingSolutionUseCase implements AddWorkingSolutionInputBoundary {
 
         if(testCases.isEmpty()) throw new IllegalStateException("Cannot add working solution to task without test cases");
 
-        WorkingSolution candidate = new WorkingSolution(command.workingSolutionCode(), language.getRuntimeImage());
+        WorkingSolution candidate = new WorkingSolution(language.getId(), command.workingSolutionCode());
         validator.validate(task, candidate, testCases);
 
         task.addWorkingSolution(candidate, validator);

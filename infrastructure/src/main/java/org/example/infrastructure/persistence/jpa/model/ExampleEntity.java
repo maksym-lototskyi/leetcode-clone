@@ -16,13 +16,8 @@ import java.util.UUID;
 public class ExampleEntity {
     @Id
     private UUID id;
-    @ElementCollection
-    @CollectionTable(
-            name = "example_input",
-            joinColumns = @JoinColumn(name = "example_id")
-    )
-    @Column(name = "value", nullable = false)
-    private List<String> inputs;
+    @Column(nullable = false)
+    private String input;
     @Column(nullable = false)
     private String output;
     private String explanation;
