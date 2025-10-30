@@ -2,7 +2,6 @@ package org.example.infrastructure.persistence.jpa.mapper;
 
 import org.example.domain.language.Language;
 import org.example.domain.language.LanguageId;
-import org.example.domain.language.RuntimeImage;
 import org.example.domain.language.Version;
 import org.example.infrastructure.persistence.jpa.model.LanguageEntity;
 
@@ -12,7 +11,6 @@ public class LanguageMapper {
                 LanguageId.of(languageEntity.getId()),
                 languageEntity.getName(),
                 new Version(languageEntity.getVersion()),
-                new RuntimeImage(languageEntity.getRuntimeImage()),
                 languageEntity.getFileExtension()
         );
     }
@@ -21,7 +19,6 @@ public class LanguageMapper {
         return LanguageEntity.builder()
                 .id(language.getId().value())
                 .version(language.getVersion().value())
-                .runtimeImage(language.getRuntimeImage().value())
                 .name(language.getName())
                 .fileExtension(language.getFileExtension())
                 .build();

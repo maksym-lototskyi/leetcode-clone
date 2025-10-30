@@ -40,12 +40,11 @@ class RunTaskUseCase implements RunTaskInputBoundary {
 
         String convertedSignature = converter.convert(task.getTaskSignature());
 
-        LanguageDto languageDto = new LanguageDto(userLanguage.getName(), userLanguage.getFileExtension(), userLanguage.getRuntimeImage().value());
+        LanguageDto languageDto = new LanguageDto(userLanguage.getName(), userLanguage.getFileExtension());
 
         LanguageDto workingSolutionLanguageDto = new LanguageDto(
                 workingSolutionLanguage.getName(),
-                workingSolutionLanguage.getFileExtension(),
-                workingSolutionLanguage.getRuntimeImage().value()
+                workingSolutionLanguage.getFileExtension()
         );
 
         ExecutionContext userExecutionContext = new ExecutionContext(command.sourceCode(), command.input(), convertedSignature, Map.of());

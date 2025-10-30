@@ -1,6 +1,7 @@
 package org.example.infrastructure.adapters.test_runner;
 
 import org.example.application.task.use_cases.run.*;
+import org.example.infrastructure.exception.ProcessInterruptedException;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -15,6 +16,12 @@ import java.util.stream.Stream;
 
 @Component
 class DockerTestRunner implements TestRunner {
+    private final RuntimeConfigResolver runtimeConfigResolver;
+
+    DockerTestRunner(RuntimeConfigResolver runtimeConfigResolver) {
+        this.runtimeConfigResolver = runtimeConfigResolver;
+    }
+
     @Override
     public TestRunResult run(LanguageDto language, ExecutionContext executionContext) throws IOException {
         String currentDir = System.getProperty("user.dir");
@@ -37,7 +44,11 @@ class DockerTestRunner implements TestRunner {
 
             addCustomClassDefinitions(executionContext.customClassDefinitions(), tmpDir, language.fileExtension());
 
-            Process process = runUserCodeInContainer(tmpDir, language.runtimeImage(), ExecutionCommandResolver.resolve(language.name()));
+            Process process = runUserCodeInContainer(
+                    tmpDir,
+                    runtimeConfigResolver.getImageFor(language.name()),
+                    runtimeConfigResolver.getCommandFor(language.name())
+            );
 
             String errorOutput = read(process.getErrorStream());
             String output = read(process.getInputStream());
@@ -56,14 +67,14 @@ class DockerTestRunner implements TestRunner {
             String outputResult = outputLines[1];
             return TestRunResult.success(outputResult, executionTime, 0);
 
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new ProcessInterruptedException("Code execution was interrupted. Please try again.");
         } finally {
             cleanUp(tmpDir);
         }
     }
 
-    private static void addCustomClassDefinitions(Map<String, String> classDefinitions, Path path, String fileExtension) throws IOException {
+    private void addCustomClassDefinitions(Map<String, String> classDefinitions, Path path, String fileExtension) throws IOException {
         for(Map.Entry<String, String> entry : classDefinitions.entrySet()) {
             Path classDefPath = Paths.get(path.toString(), entry.getKey() + fileExtension);
             Files.writeString(classDefPath, entry.getValue());
@@ -82,12 +93,12 @@ class DockerTestRunner implements TestRunner {
         return builder.toString();
     }
 
-    private static Path copyTemplateToTmp(Path tmpDir, LanguageDto language) throws IOException, InterruptedException {
+    private Path copyTemplateToTmp(Path tmpDir, LanguageDto language) throws IOException, InterruptedException {
         String templateFileName = language.name() + "_template";
         Process processInit = new ProcessBuilder(
                 "docker", "run", "--rm",
                 "-v", tmpDir + ":/app/tmp",
-                language.runtimeImage(),
+                runtimeConfigResolver.getImageFor(language.name()),
                 "bash", "-c", "cp /app/templates/" + templateFileName + " /app/tmp"
         )
                 .redirectErrorStream(true)
@@ -99,14 +110,14 @@ class DockerTestRunner implements TestRunner {
         return Path.of(tmpDir.toString(), templateFileName);
     }
 
-    private static Process runUserCodeInContainer(Path tmpDir, String runtimeImage, String[] execCommands) throws IOException {
+    private Process runUserCodeInContainer(Path tmpDir, String runtimeImage, List<String> execCommands) throws IOException {
         String[] dockerStartCommands = {
                 "docker", "run", "--rm",
                 "-v", tmpDir + ":/app",
                 runtimeImage};
 
         List<String> commands = new ArrayList<>(List.of(dockerStartCommands));
-        commands.addAll(Arrays.asList(execCommands));
+        commands.addAll(execCommands);
 
         return new ProcessBuilder(commands).start();
     }

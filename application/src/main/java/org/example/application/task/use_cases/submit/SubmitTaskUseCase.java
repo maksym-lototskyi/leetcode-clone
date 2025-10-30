@@ -68,8 +68,7 @@ class SubmitTaskUseCase implements SubmitTaskInputBoundary{
         for (TestCase testCase : testCases) {
             LanguageDto languageDto = new LanguageDto(
                     language.getName(),
-                    language.getFileExtension(),
-                    language.getRuntimeImage().value()
+                    language.getFileExtension()
             );
             ExecutionContext context = new ExecutionContext(
                     code,

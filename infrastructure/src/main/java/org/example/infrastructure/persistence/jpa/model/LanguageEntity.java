@@ -21,8 +21,6 @@ public class LanguageEntity {
     @Column(nullable = false)
     private String version;
     @Column(nullable = false)
-    private String runtimeImage;
-    @Column(nullable = false)
     private String fileExtension;
     @OneToMany(mappedBy = "language")
     private List<WorkingSolutionEntity> workingSolutions;
