@@ -58,7 +58,7 @@ public class TaskEntity {
     @OneToMany(mappedBy = "task", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExampleEntity> examples;
 
-    @OneToMany(mappedBy = "task", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TestCaseEntity> testCases;
 
     @OneToOne(mappedBy = "task")

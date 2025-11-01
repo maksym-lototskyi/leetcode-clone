@@ -1,13 +1,18 @@
 package org.example.application.task.use_cases.run;
 
+import org.example.application.class_definition.ports.out.ClassDefinitionRepository;
 import org.example.application.exception.NotFoundException;
 import org.example.application.language.ports.out.LanguageRepository;
 import org.example.application.task.ports.out.TaskRepository;
+import org.example.domain.class_definition.ClassDefinitionId;
+import org.example.domain.class_definition.ClassImplementation;
 import org.example.domain.language.Language;
+import org.example.domain.language.LanguageId;
 import org.example.domain.submission.SubmissionResultStatus;
 import org.example.domain.task.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,12 +21,14 @@ import static org.example.application.task.use_cases.run.StatusDeterminer.determ
 class RunTaskUseCase implements RunTaskInputBoundary {
     private final LanguageRepository languageRepository;
     private final TaskRepository taskRepository;
+    private final ClassDefinitionRepository classDefinitionRepository;
     private final TestRunner testRunner;
     private final ObjectConverter converter;
 
-    public RunTaskUseCase(LanguageRepository languageRepository, TaskRepository taskRepository, TestRunner testRunner, ObjectConverter converter) {
+    public RunTaskUseCase(LanguageRepository languageRepository, TaskRepository taskRepository, ClassDefinitionRepository classDefinitionRepository, TestRunner testRunner, ObjectConverter converter) {
         this.languageRepository = languageRepository;
         this.taskRepository = taskRepository;
+        this.classDefinitionRepository = classDefinitionRepository;
         this.testRunner = testRunner;
         this.converter = converter;
     }
@@ -38,6 +45,9 @@ class RunTaskUseCase implements RunTaskInputBoundary {
         Language workingSolutionLanguage = languageRepository.findById(taskWorkingSolution.languageId())
                 .orElseThrow(() -> new NotFoundException("Language not found with id: " + taskWorkingSolution.languageId()));
 
+        List<ClassImplementation> userLanguageImplementations = getImplementations(task.getRelatedClassDefinitions(), userLanguage.getId());
+        List<ClassImplementation> workingSolutionLanguageImplementations = getImplementations(task.getRelatedClassDefinitions(), workingSolutionLanguage.getId());
+
         String convertedSignature = converter.convert(task.getTaskSignature());
 
         LanguageDto languageDto = new LanguageDto(userLanguage.getName(), userLanguage.getFileExtension());
@@ -47,8 +57,15 @@ class RunTaskUseCase implements RunTaskInputBoundary {
                 workingSolutionLanguage.getFileExtension()
         );
 
-        ExecutionContext userExecutionContext = new ExecutionContext(command.sourceCode(), command.input(), convertedSignature, Map.of());
-        ExecutionContext workingSolutionExecutionContext = new ExecutionContext(taskWorkingSolution.sourceCode(), command.input(), convertedSignature, Map.of());
+        ExecutionContext userExecutionContext = new ExecutionContext(command.sourceCode(),
+                command.input(),
+                convertedSignature,
+                convertToAdditionalClassDtos(userLanguageImplementations));
+
+        ExecutionContext workingSolutionExecutionContext = new ExecutionContext(
+                taskWorkingSolution.sourceCode(),
+                command.input(), convertedSignature,
+                convertToAdditionalClassDtos(workingSolutionLanguageImplementations));
 
         TestRunResult userResult = testRunner.run(languageDto, userExecutionContext);
         TestRunResult workingSolutionResult = testRunner.run(workingSolutionLanguageDto, workingSolutionExecutionContext);
@@ -57,5 +74,21 @@ class RunTaskUseCase implements RunTaskInputBoundary {
         return new TaskRunResult(command.input(), workingSolutionResult.output(), userResult.output(), status == SubmissionResultStatus.ACCEPTED, userResult.executionTimeMs(), status);
     }
 
+    private List<AdditionalClassDto> convertToAdditionalClassDtos(List<ClassImplementation> implementations){
+        List<AdditionalClassDto> dtos = new ArrayList<>();
+        for(var impl : implementations){
+            dtos.add(new AdditionalClassDto(impl.className(), impl.sourceCode()));
+        }
+        return dtos;
+    }
 
+    private List<ClassImplementation> getImplementations(List<ClassDefinitionId> definitionIds, LanguageId languageId){
+        List<ClassImplementation> implementations = new ArrayList<>();
+        for(var defId : definitionIds){
+            ClassImplementation impl = classDefinitionRepository.findImplementationByDefinitionAndLanguageId(defId, languageId)
+                    .orElseThrow(() -> new NotFoundException("Class implementation not found for class definition id: " + defId + " and language id: " + languageId));
+            implementations.add(impl);
+        }
+        return implementations;
+    }
 }

@@ -1,12 +1,15 @@
 package org.example.infrastructure.persistence.jpa.repository;
 
+import org.example.application.exception.NotFoundException;
 import org.example.application.task.ports.out.TaskRepository;
 import org.example.domain.language.Language;
 import org.example.domain.task.Task;
 import org.example.domain.task.TaskId;
 import org.example.domain.task.TaskSummary;
+import org.example.domain.task.TestCase;
 import org.example.domain.task.service.IOValidator;
 import org.example.infrastructure.persistence.jpa.mapper.TaskMapper;
+import org.example.infrastructure.persistence.jpa.mapper.TestCaseMapper;
 import org.example.infrastructure.persistence.jpa.model.LanguageEntity;
 import org.example.infrastructure.persistence.jpa.model.TaskEntity;
 import org.example.infrastructure.persistence.jpa.model.TopicEntity;
@@ -21,12 +24,14 @@ class JpaTaskRepository implements TaskRepository {
     private final JpaTaskEntityRepository jpaTaskEntityRepository;
     private final JpaTopicEntityRepository jpaTopicEntityRepository;
     private final JpaLanguageEntityRepository jpaLanguageEntityRepository;
+    private final JpaTestCaseRepository jpaTestCaseRepository;
     private final IOValidator validator;
 
-    public JpaTaskRepository(JpaTaskEntityRepository jpaTaskEntityRepository, JpaTopicEntityRepository jpaTopicEntityRepository, JpaLanguageEntityRepository jpaLanguageEntityRepository, IOValidator validator) {
+    public JpaTaskRepository(JpaTaskEntityRepository jpaTaskEntityRepository, JpaTopicEntityRepository jpaTopicEntityRepository, JpaLanguageEntityRepository jpaLanguageEntityRepository, JpaTestCaseRepository jpaTestCaseRepository, IOValidator validator) {
         this.jpaTaskEntityRepository = jpaTaskEntityRepository;
         this.jpaTopicEntityRepository = jpaTopicEntityRepository;
         this.jpaLanguageEntityRepository = jpaLanguageEntityRepository;
+        this.jpaTestCaseRepository = jpaTestCaseRepository;
         this.validator = validator;
     }
 
@@ -47,7 +52,7 @@ class JpaTaskRepository implements TaskRepository {
     }
 
     @Override
-    public Task save(Task task) {
+    public void save(Task task) {
         List<TopicEntity> topics = jpaTopicEntityRepository.findAllById(task.getTopics()
                 .stream()
                 .map(t -> t.topicId().value())
@@ -55,14 +60,21 @@ class JpaTaskRepository implements TaskRepository {
         WorkingSolutionEntity workingSolution = null;
         if(task.getWorkingSolution() != null){
             LanguageEntity language = jpaLanguageEntityRepository.findById(task.getWorkingSolution().languageId().value())
-                    .orElseThrow(() -> new IllegalStateException("Language not found with id: " + task.getWorkingSolution().languageId().value()));
+                    .orElseThrow(() -> new NotFoundException("Language not found with id: " + task.getWorkingSolution().languageId().value()));
 
             workingSolution = WorkingSolutionEntity.builder()
                     .language(language)
                     .sourceCode(task.getWorkingSolution().sourceCode())
                     .build();
         }
-        TaskEntity saved = jpaTaskEntityRepository.save(TaskMapper.map(task, topics, workingSolution));
-        return TaskMapper.map(saved, validator);
+        jpaTaskEntityRepository.save(TaskMapper.map(task, topics, workingSolution));
+    }
+
+    @Override
+    public List<TestCase> findAllTestCasesByTaskId(TaskId taskId) {
+        return jpaTestCaseRepository.findByTask_TaskId(taskId.value())
+                .stream()
+                .map(tc -> TestCaseMapper.map(tc, validator))
+                .toList();
     }
 }
