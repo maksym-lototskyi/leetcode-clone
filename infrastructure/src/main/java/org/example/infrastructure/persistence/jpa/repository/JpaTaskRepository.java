@@ -10,6 +10,7 @@ import org.example.domain.task.TestCase;
 import org.example.domain.task.service.IOValidator;
 import org.example.infrastructure.persistence.jpa.mapper.TaskMapper;
 import org.example.infrastructure.persistence.jpa.mapper.TestCaseMapper;
+import org.example.infrastructure.persistence.jpa.mapper.WorkingSolutionMapper;
 import org.example.infrastructure.persistence.jpa.model.LanguageEntity;
 import org.example.infrastructure.persistence.jpa.model.TaskEntity;
 import org.example.infrastructure.persistence.jpa.model.TopicEntity;
@@ -24,22 +25,27 @@ class JpaTaskRepository implements TaskRepository {
     private final JpaTaskEntityRepository jpaTaskEntityRepository;
     private final JpaTopicEntityRepository jpaTopicEntityRepository;
     private final JpaLanguageEntityRepository jpaLanguageEntityRepository;
-    private final JpaTestCaseRepository jpaTestCaseRepository;
     private final IOValidator validator;
 
-    public JpaTaskRepository(JpaTaskEntityRepository jpaTaskEntityRepository, JpaTopicEntityRepository jpaTopicEntityRepository, JpaLanguageEntityRepository jpaLanguageEntityRepository, JpaTestCaseRepository jpaTestCaseRepository, IOValidator validator) {
+    public JpaTaskRepository(JpaTaskEntityRepository jpaTaskEntityRepository, JpaTopicEntityRepository jpaTopicEntityRepository, JpaLanguageEntityRepository jpaLanguageEntityRepository, IOValidator validator) {
         this.jpaTaskEntityRepository = jpaTaskEntityRepository;
         this.jpaTopicEntityRepository = jpaTopicEntityRepository;
         this.jpaLanguageEntityRepository = jpaLanguageEntityRepository;
-        this.jpaTestCaseRepository = jpaTestCaseRepository;
         this.validator = validator;
     }
 
     @Override
-    public Optional<Task> findById(TaskId taskId) {
+    public Optional<Task> loadTaskDefinition(TaskId taskId) {
         return jpaTaskEntityRepository.findById(taskId.value())
                 .map(t -> TaskMapper.map(t, validator));
     }
+
+    @Override
+    public Optional<Task> loadTaskForRuntime(TaskId taskId) {
+        return jpaTaskEntityRepository.findTaskForRuntimeByTaskId(taskId.value())
+                .map(t -> TaskMapper.map(t, validator));
+    }
+
 
     @Override
     public List<TaskSummary> findTaskSummaries(int pageNumber, int pageSize) {
@@ -62,19 +68,8 @@ class JpaTaskRepository implements TaskRepository {
             LanguageEntity language = jpaLanguageEntityRepository.findById(task.getWorkingSolution().languageId().value())
                     .orElseThrow(() -> new NotFoundException("Language not found with id: " + task.getWorkingSolution().languageId().value()));
 
-            workingSolution = WorkingSolutionEntity.builder()
-                    .language(language)
-                    .sourceCode(task.getWorkingSolution().sourceCode())
-                    .build();
+            workingSolution = WorkingSolutionMapper.map(task.getWorkingSolution(), language);
         }
         jpaTaskEntityRepository.save(TaskMapper.map(task, topics, workingSolution));
-    }
-
-    @Override
-    public List<TestCase> findAllTestCasesByTaskId(TaskId taskId) {
-        return jpaTestCaseRepository.findByTask_TaskId(taskId.value())
-                .stream()
-                .map(tc -> TestCaseMapper.map(tc, validator))
-                .toList();
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Optional;
 import java.util.UUID;
 
 interface JpaTaskEntityRepository extends JpaRepository<TaskEntity, UUID> {
@@ -17,5 +18,14 @@ interface JpaTaskEntityRepository extends JpaRepository<TaskEntity, UUID> {
        FROM TaskEntity t
 """)
     Page<TaskSummary> findAllSummaries(Pageable pageable);
+
+    @Query("""
+         SELECT t, cd.id, tc
+         FROM TaskEntity t
+         JOIN t.classDefinitions cd
+         JOIN t.testCases tc
+         WHERE t.taskId = :taskId
+    """)
+    Optional<TaskEntity> findTaskForRuntimeByTaskId(UUID taskId);
 
 }

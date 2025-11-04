@@ -15,7 +15,7 @@ class AddTestCaseUseCase implements AddTestCaseInputBoundary {
     }
 
     public void execute(AddTestCaseCommand command){
-        Task task = taskRepository.findById(TaskId.of(command.taskId())).orElseThrow(() -> new NotFoundException("Task not found"));
+        Task task = taskRepository.loadTaskDefinition(TaskId.of(command.taskId())).orElseThrow(() -> new NotFoundException("Task not found"));
 
         task.addTestCase(TestCase.create(
                 new Input(command.input(), ioValidator),

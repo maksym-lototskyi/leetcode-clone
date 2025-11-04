@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TaskRepository {
-    Optional<Task> findById(TaskId taskId);
+    Optional<Task> loadTaskDefinition(TaskId taskId);
+    Optional<Task> loadTaskForRuntime(TaskId taskId);
     List<TaskSummary> findTaskSummaries(int pageNumber, int pageSize);
     void save(Task task);
-    List<TestCase> findAllTestCasesByTaskId(TaskId taskId);
     boolean existsById(TaskId taskId);
 }

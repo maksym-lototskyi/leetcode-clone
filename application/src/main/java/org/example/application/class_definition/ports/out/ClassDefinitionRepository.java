@@ -12,4 +12,7 @@ public interface ClassDefinitionRepository {
     List<ClassDefinition> getAllByNames(Iterable<String> names);
     List<String> findExistingNames(Iterable<String> names);
     Optional<ClassImplementation> findImplementationByDefinitionAndLanguageId(ClassDefinitionId classDefinitionId, LanguageId languageId);
+    List<ClassImplementation> findClassImplementationsByDefinitionIdsAndLanguageId(Iterable<ClassDefinitionId> classDefinitionIds, LanguageId languageId);
+
+    List<ClassDefinition> findAllByIds(Iterable<ClassDefinitionId> relatedClassDefinitions);
 }

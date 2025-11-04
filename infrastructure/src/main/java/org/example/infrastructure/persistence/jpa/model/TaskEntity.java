@@ -63,5 +63,12 @@ public class TaskEntity {
 
     @OneToOne(mappedBy = "task")
     private WorkingSolutionEntity workingSolutionEntity;
+    @ManyToMany
+    @JoinTable(
+            name = "task_class_definition",
+            joinColumns = @JoinColumn(name = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "class_definition_id")
+    )
+    private List<ClassDefinitionEntity> classDefinitions;
 }
 

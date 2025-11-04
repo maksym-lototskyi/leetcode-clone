@@ -1,5 +1,6 @@
 package org.example.application.task.use_cases.submit;
 
+import org.example.application.class_definition.ports.out.ClassDefinitionRepository;
 import org.example.application.language.ports.out.LanguageRepository;
 import org.example.application.submission.ports.out.SubmissionRepository;
 import org.example.application.task.ports.out.TaskRepository;
@@ -13,9 +14,10 @@ public class SubmitTaskInputBoundaryFactory {
             UserRepository userRepository,
             SubmissionRepository submissionRepository,
             LanguageRepository languageRepository,
+            ClassDefinitionRepository classDefinitionRepository,
             TestRunner taskRunner,
             ObjectConverter converter
     ){
-        return new SubmitTaskUseCase(taskRepository, userRepository, submissionRepository, languageRepository, taskRunner, converter);
+        return new SubmitTaskUseCase(taskRepository, userRepository, submissionRepository, languageRepository, classDefinitionRepository, taskRunner, converter);
     }
 }

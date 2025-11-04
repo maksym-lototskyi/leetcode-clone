@@ -3,6 +3,8 @@ package org.example.infrastructure.persistence.jpa.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 
 @Getter
 @Entity
@@ -11,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 public class WorkingSolutionEntity {
     @Id
-    private Long id;
+    private UUID id;
     @Column(nullable = false, columnDefinition = "TEXT")
     private String sourceCode;
     @ManyToOne

@@ -23,7 +23,7 @@ class AddWorkingSolutionUseCase implements AddWorkingSolutionInputBoundary {
     }
 
     public void execute(AddWorkingSolutionCommand command){
-        Task task = taskRepository.findById(TaskId.of(command.taskId()))
+        Task task = taskRepository.loadTaskDefinition(TaskId.of(command.taskId()))
                 .orElseThrow(() -> new NotFoundException("Task not found with id: " + command.taskId()));
 
         Language language = repository.findByName(command.programmingLanguage())

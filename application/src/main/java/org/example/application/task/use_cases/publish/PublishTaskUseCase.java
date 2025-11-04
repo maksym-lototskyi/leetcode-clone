@@ -16,11 +16,8 @@ public class PublishTaskUseCase implements PublishTaskInputBoundary {
     }
 
     public void execute(UUID taskId){
-        var task = taskRepository.findById(TaskId.of(taskId))
+        var task = taskRepository.loadTaskForRuntime(TaskId.of(taskId))
                 .orElseThrow(() -> new NotFoundException("Task not found with id: " + taskId));
-
-        List<TestCase> testCases = taskRepository.findAllTestCasesByTaskId(task.getTaskId());
-        if(testCases.isEmpty()) throw new IllegalStateException("Cannot publish task without test cases");
 
         task.publish();
         taskRepository.save(task);

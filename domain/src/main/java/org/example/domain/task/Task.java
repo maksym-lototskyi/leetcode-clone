@@ -19,14 +19,14 @@ public class Task {
     private final List<Topic> topics;
     private final List<Constraint> constraints;
     private final List<Example> examples;
+    private final List<TestCase> testCases;
     private final List<ClassDefinitionId> relatedClassDefinitions;
     private WorkingSolution workingSolution;
     private long timeLimitMs;
     private long memoryLimitKb;
 
 
-    public Task(TaskId taskId, TaskSignature taskSignature, String title, TaskDescription taskDescription, TaskLevel taskLevel, TaskStatus status, List<Topic> topics, List<Constraint> constraints,  List<Example> examples, List<ClassDefinitionId> relatedClassDefinitions, WorkingSolution workingSolution,  long timeLimitMs, long memoryLimitKb) {
-        this.relatedClassDefinitions = relatedClassDefinitions;
+    public Task(TaskId taskId, TaskSignature taskSignature, String title, TaskDescription taskDescription, TaskLevel taskLevel, TaskStatus status, List<Topic> topics, List<Constraint> constraints, List<Example> examples, List<TestCase> testCases, List<ClassDefinitionId> relatedClassDefinitions, WorkingSolution workingSolution, long timeLimitMs, long memoryLimitKb) {
         Objects.requireNonNull(taskId, "TaskId cannot be null");
         Objects.requireNonNull(taskDescription, "Task description cannot be null");
         Objects.requireNonNull(taskLevel, "Task level cannot be null");
@@ -57,6 +57,8 @@ public class Task {
         this.taskSignature = taskSignature;
         this.workingSolution = workingSolution;
         this.examples = new ArrayList<>(examples != null ? examples : new ArrayList<>());
+        this.testCases = new ArrayList<>(testCases != null ? testCases : new ArrayList<>());
+        this.relatedClassDefinitions = new ArrayList<>(relatedClassDefinitions != null ? relatedClassDefinitions : new ArrayList<>());
     }
 
     public void publish(){
@@ -69,6 +71,7 @@ public class Task {
         if(this.examples == null || this.examples.isEmpty()){
             throw new IllegalStateException("Cannot publish task without at least one example");
         }
+        if(testCases.isEmpty()) throw new IllegalStateException("Cannot publish task without test cases");
         this.status = TaskStatus.PUBLISHED;
     }
 
@@ -83,7 +86,7 @@ public class Task {
     }
 
     public static Task draft(TaskSignature taskSignature, String title, TaskDescription taskDescription, TaskLevel taskLevel, List<Topic> topics, List<Constraint> constraints, List<ClassDefinitionId> relatedClassDefinitions, long timeLimitMs, long memoryLimitKb) {
-        return new Task(TaskId.generate(), taskSignature, title, taskDescription, taskLevel, TaskStatus.DRAFT, topics, constraints,null, relatedClassDefinitions, null, timeLimitMs, memoryLimitKb);
+        return new Task(TaskId.generate(), taskSignature, title, taskDescription, taskLevel, TaskStatus.DRAFT, topics, constraints,null, null, relatedClassDefinitions, null, timeLimitMs, memoryLimitKb);
     }
 
     public void addExample(Example example) {

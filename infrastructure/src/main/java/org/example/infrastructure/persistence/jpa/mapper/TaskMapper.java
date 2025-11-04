@@ -1,5 +1,6 @@
 package org.example.infrastructure.persistence.jpa.mapper;
 
+import org.example.domain.class_definition.ClassDefinitionId;
 import org.example.domain.language.LanguageId;
 import org.example.domain.task.*;
 import org.example.domain.task.service.IOValidator;
@@ -34,23 +35,28 @@ public class TaskMapper {
                         .stream()
                         .map(Task.Constraint::new)
                         .toList(),
-                taskEntity.getTimeLimitMs(),
-                taskEntity.getMemoryLimitKb(),
-                new WorkingSolution(
-                        LanguageId.of(taskEntity.getWorkingSolutionEntity().getLanguage().getId()),
-                        taskEntity.getWorkingSolutionEntity().getSourceCode()
-                ),
                 taskEntity.getExamples().stream().map(exampleEntity -> new Example(
                         ExampleId.of(exampleEntity.getId()),
                         new Input(exampleEntity.getInput(), validator),
                         new Output(exampleEntity.getOutput(), validator),
                         exampleEntity.getExplanation()
                 )).toList(),
+
                 taskEntity.getTestCases().stream().map(testCaseEntity -> new TestCase(
                         TestCaseId.of(testCaseEntity.getId()),
                         new Input(testCaseEntity.getInput(), validator),
                         new Output(testCaseEntity.getExpectedOutput(), validator)
-                )).toList()
+                )).toList(),
+                taskEntity.getClassDefinitions().stream()
+                        .map(cdEntity -> ClassDefinitionId.of(cdEntity.getId()))
+                        .toList(),
+                WorkingSolution.of(
+                        WorkingSolutionId.of(taskEntity.getWorkingSolutionEntity().getId()),
+                        LanguageId.of(taskEntity.getWorkingSolutionEntity().getLanguage().getId()),
+                        taskEntity.getWorkingSolutionEntity().getSourceCode()
+                ),
+                taskEntity.getTimeLimitMs(),
+                taskEntity.getMemoryLimitKb()
         );
     }
 

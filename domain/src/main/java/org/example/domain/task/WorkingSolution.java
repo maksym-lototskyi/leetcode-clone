@@ -1,13 +1,16 @@
 package org.example.domain.task;
 
 import org.example.domain.language.LanguageId;
-import org.example.domain.task.service.WorkingSolutionValidator;
 
 public record WorkingSolution(
-    LanguageId languageId,
-    String sourceCode
+        WorkingSolutionId id,
+        LanguageId languageId,
+        String sourceCode
 ) {
     public WorkingSolution {
+        if(id == null) {
+            throw new IllegalArgumentException("WorkingSolutionId cannot be null");
+        }
         if(languageId == null) {
             throw new IllegalArgumentException("LanguageId cannot be null");
         }
@@ -16,7 +19,11 @@ public record WorkingSolution(
         }
     }
 
-    public static WorkingSolution of(LanguageId languageId, String sourceCode) {
-        return new WorkingSolution(languageId, sourceCode);
+    public static WorkingSolution create(LanguageId languageId, String sourceCode) {
+        return new WorkingSolution(WorkingSolutionId.generate(), languageId, sourceCode);
+    }
+
+    public static WorkingSolution of(WorkingSolutionId id, LanguageId languageId, String sourceCode) {
+        return new WorkingSolution(id, languageId, sourceCode);
     }
 }
