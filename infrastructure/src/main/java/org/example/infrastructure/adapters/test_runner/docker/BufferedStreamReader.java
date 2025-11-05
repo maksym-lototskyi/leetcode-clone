@@ -1,4 +1,4 @@
-package org.example.infrastructure.adapters.test_runner;
+package org.example.infrastructure.adapters.test_runner.docker;
 
 import java.io.BufferedReader;
 import java.io.IOException;

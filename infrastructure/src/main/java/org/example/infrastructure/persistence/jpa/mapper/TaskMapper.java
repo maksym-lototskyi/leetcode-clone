@@ -4,7 +4,6 @@ import org.example.domain.class_definition.ClassDefinitionId;
 import org.example.domain.language.LanguageId;
 import org.example.domain.task.*;
 import org.example.domain.task.service.IOValidator;
-import org.example.domain.topic.Topic;
 import org.example.domain.topic.TopicId;
 import org.example.infrastructure.persistence.jpa.model.*;
 
@@ -15,7 +14,7 @@ public class TaskMapper {
         return new Task(
                 TaskId.of(taskEntity.getTaskId()),
                 TaskSignature.of(
-                        taskEntity.getTaskSignature().getFunctionName(),
+                        taskEntity.getTaskSignature().getMethodName(),
                         taskEntity.getTaskSignature().getParameters()
                                 .stream()
                                 .map(param -> new TaskSignature.Parameter(
@@ -29,7 +28,7 @@ public class TaskMapper {
                 taskEntity.getTaskLevel(),
                 taskEntity.getTaskStatus(),
                 taskEntity.getTopics().stream()
-                        .map(t -> new Topic(TopicId.of(t.getId()), t.getName()))
+                        .map(t -> TopicId.of(t.getId()))
                         .toList(),
                 taskEntity.getConstraints()
                         .stream()
@@ -50,11 +49,11 @@ public class TaskMapper {
                 taskEntity.getClassDefinitions().stream()
                         .map(cdEntity -> ClassDefinitionId.of(cdEntity.getId()))
                         .toList(),
-                WorkingSolution.of(
+                taskEntity.getWorkingSolutionEntity() != null ? WorkingSolution.of(
                         WorkingSolutionId.of(taskEntity.getWorkingSolutionEntity().getId()),
                         LanguageId.of(taskEntity.getWorkingSolutionEntity().getLanguage().getId()),
                         taskEntity.getWorkingSolutionEntity().getSourceCode()
-                ),
+                ) : null,
                 taskEntity.getTimeLimitMs(),
                 taskEntity.getMemoryLimitKb()
         );
@@ -62,42 +61,53 @@ public class TaskMapper {
 
     public static TaskEntity map(Task task, List<TopicEntity>  topics, WorkingSolutionEntity workingSolution){
         TaskSignatureEmbeddable taskSignatureEmbeddable = new TaskSignatureEmbeddable(
-                task.getTaskSignature().functionName(),
+                task.getTaskSignature().methodName(),
                 task.getTaskSignature().parameters()
                         .stream()
                         .map(p -> new ParameterEmbeddable(p.name(), p.type()))
                         .toList(),
                 task.getTaskSignature().returnType());
 
-
-        return TaskEntity.builder()
+        TaskEntity taskEntity = TaskEntity.builder()
                 .taskId(task.getTaskId().value())
                 .taskLevel(task.getTaskLevel())
                 .title(task.getTitle())
+                .taskStatus(task.getStatus())
                 .taskSignature(taskSignatureEmbeddable)
                 .taskDescription(task.getTaskDescription().value())
                 .memoryLimitKb(task.getMemoryLimitKb())
                 .timeLimitMs(task.getTimeLimitMs())
                 .workingSolutionEntity(workingSolution)
-                .examples(task.getExamples().stream()
-                        .map(e -> ExampleEntity.builder()
-                                .id(e.exampleId().value())
-                                .explanation(e.explanation())
-                                .output(e.output().value())
-                                .input(e.input().getInput())
-                                .build())
-                        .toList())
-                .testCases(task.getTestCases().stream()
-                        .map(tc -> TestCaseEntity.builder()
-                                .id(tc.testCaseId().value())
-                                .expectedOutput(tc.expectedOutput().value())
-                                .input(tc.input().getInput())
-                                .build())
-                        .toList())
                 .constraints(task.getConstraints().stream()
                         .map(c -> c.description())
                         .toList())
                 .topics(topics)
                 .build();
+
+        if(workingSolution != null) workingSolution.setTask(taskEntity);
+
+        List<ExampleEntity> examples = task.getExamples().stream()
+                .map(e -> ExampleEntity.builder()
+                        .id(e.exampleId().value())
+                        .explanation(e.explanation())
+                        .output(e.output().value())
+                        .input(e.input().getInput())
+                        .task(taskEntity)
+                        .build())
+                .toList();
+
+        List<TestCaseEntity> testCases = task.getTestCases().stream()
+                .map(tc -> TestCaseEntity.builder()
+                        .id(tc.testCaseId().value())
+                        .expectedOutput(tc.expectedOutput().value())
+                        .input(tc.input().getInput())
+                        .task(taskEntity)
+                        .build())
+                .toList();
+
+        taskEntity.setExamples(examples);
+        taskEntity.setTestCases(testCases);
+
+        return taskEntity;
     }
 }

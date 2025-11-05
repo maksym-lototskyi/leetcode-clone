@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 public class TaskSignatureEmbeddable {
-    private String functionName;
+    private String methodName;
     private String returnType;
 
     @ElementCollection
@@ -21,8 +21,8 @@ public class TaskSignatureEmbeddable {
 
     protected TaskSignatureEmbeddable() {}
 
-    public TaskSignatureEmbeddable(String functionName, List<ParameterEmbeddable> parameters, String returnType) {
-        this.functionName = functionName;
+    public TaskSignatureEmbeddable(String methodName, List<ParameterEmbeddable> parameters, String returnType) {
+        this.methodName = methodName;
         this.parameters = parameters;
         this.returnType = returnType;
     }

@@ -17,10 +17,10 @@ public class WorkingSolutionEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String sourceCode;
     @ManyToOne
-    @JoinColumn(name = "language_id", nullable = false)
+    @JoinColumn(name = "language_id")
     private LanguageEntity language;
     @OneToOne
-    @JoinColumn(name = "task_id", nullable = false)
+    @JoinColumn(name = "task_id")
     private TaskEntity task;
     public WorkingSolutionEntity() {
 

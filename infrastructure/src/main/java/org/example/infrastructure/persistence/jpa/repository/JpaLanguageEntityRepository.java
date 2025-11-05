@@ -9,4 +9,6 @@ import java.util.UUID;
 
 interface JpaLanguageEntityRepository extends JpaRepository<LanguageEntity, UUID> {
     Optional<LanguageEntity> findByName(String name);
+
+    boolean existsByName(String name);
 }

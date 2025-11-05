@@ -1,4 +1,4 @@
-package org.example.infrastructure.adapters.test_runner;
+package org.example.infrastructure.adapters.test_runner.docker;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

@@ -1,10 +1,10 @@
-package org.example.infrastructure.adapters.test_runner;
+package org.example.infrastructure.adapters.test_runner.docker;
 
 import com.google.gson.Gson;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JsonExecutionOutputParser implements ExecutionOutputParser{
+class JsonExecutionOutputParser implements ExecutionOutputParser{
     @Override
     public ParsedOutput parse(String output) {
         Gson gson = new Gson();

@@ -6,6 +6,7 @@ import org.example.domain.task.TaskLevel;
 import org.example.domain.task.TaskStatus;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -61,7 +62,7 @@ public class TaskEntity {
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TestCaseEntity> testCases;
 
-    @OneToOne(mappedBy = "task")
+    @OneToOne(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private WorkingSolutionEntity workingSolutionEntity;
     @ManyToMany
     @JoinTable(
@@ -69,6 +70,6 @@ public class TaskEntity {
             joinColumns = @JoinColumn(name = "task_id"),
             inverseJoinColumns = @JoinColumn(name = "class_definition_id")
     )
-    private List<ClassDefinitionEntity> classDefinitions;
+    private Set<ClassDefinitionEntity> classDefinitions;
 }
 

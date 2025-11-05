@@ -22,6 +22,6 @@ public class ExampleEntity {
     private String output;
     private String explanation;
     @ManyToOne
-    @JoinColumn(name = "task_id", nullable = false)
+    @JoinColumn(name = "task_id")
     private TaskEntity task;
 }

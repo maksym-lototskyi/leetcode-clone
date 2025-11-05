@@ -1,17 +1,15 @@
 package org.example.infrastructure.persistence.jpa.mapper;
 
-import org.example.domain.language.Language;
-import org.example.domain.language.LanguageId;
-import org.example.domain.language.Version;
+import org.example.domain.language.*;
 import org.example.infrastructure.persistence.jpa.model.LanguageEntity;
 
 public class LanguageMapper {
     public static Language map(LanguageEntity languageEntity) {
         return new Language(
                 LanguageId.of(languageEntity.getId()),
-                languageEntity.getName(),
+                LanguageName.of(languageEntity.getName()),
                 new Version(languageEntity.getVersion()),
-                languageEntity.getFileExtension()
+                FileExtension.of(languageEntity.getFileExtension())
         );
     }
 
@@ -19,8 +17,8 @@ public class LanguageMapper {
         return LanguageEntity.builder()
                 .id(language.getId().value())
                 .version(language.getVersion().value())
-                .name(language.getName())
-                .fileExtension(language.getFileExtension())
+                .name(language.getName().value())
+                .fileExtension(language.getFileExtension().value())
                 .build();
     }
 }

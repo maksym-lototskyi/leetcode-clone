@@ -1,4 +1,4 @@
-package org.example.infrastructure.adapters.test_runner;
+package org.example.infrastructure.adapters.test_runner.docker;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -25,15 +25,24 @@ public class RuntimeConfigResolver {
     }
 
     private List<String> getCommandFor(String language, boolean isCompile) {
-        RuntimeProperties.RuntimeConfig config = runtimeProperties.getConfigs().get(language);
-        if (config == null) {
-            throw new UnknownRuntimeException("Unknown runtime: " + language);
-        }
+        RuntimeProperties.RuntimeConfig config = getConfigFor(language);
         if(isCompile) return config.getCompileCommand();
         return config.getRunCommand();
     }
 
     public String getImageFor(String language) {
         return runtimeProperties.getConfigs().get(language).getImage();
+    }
+
+    public boolean hasCompileCommandFor(String language) {
+        RuntimeProperties.RuntimeConfig config = getConfigFor(language);
+        return config.getCompileCommand() != null && !config.getCompileCommand().isEmpty();
+    }
+    private RuntimeProperties.RuntimeConfig getConfigFor(String language) {
+        RuntimeProperties.RuntimeConfig config = runtimeProperties.getConfigs().get(language);
+        if (config == null) {
+            throw new UnknownRuntimeException("Unknown runtime: " + language);
+        }
+        return config;
     }
 }

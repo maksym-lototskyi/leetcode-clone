@@ -19,7 +19,7 @@ public class TestCaseEntity {
     @Column(nullable = false)
     private String expectedOutput;
     @ManyToOne
-    @JoinColumn(name = "task_id", nullable = false)
+    @JoinColumn(name = "task_id")
     private TaskEntity task;
     @Column(nullable = false)
     private String input;

@@ -1,4 +1,4 @@
-package org.example.infrastructure.adapters.object_converter;
+package org.example.infrastructure.adapters.object_converter.json;
 
 import com.google.gson.Gson;
 import org.example.application.task.use_cases.run.ObjectConverter;

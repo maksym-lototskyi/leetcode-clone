@@ -20,12 +20,13 @@ interface JpaTaskEntityRepository extends JpaRepository<TaskEntity, UUID> {
     Page<TaskSummary> findAllSummaries(Pageable pageable);
 
     @Query("""
-         SELECT t, cd.id, tc
-         FROM TaskEntity t
-         JOIN t.classDefinitions cd
-         JOIN t.testCases tc
-         WHERE t.taskId = :taskId
-    """)
+    SELECT DISTINCT t
+    FROM TaskEntity t
+    LEFT JOIN FETCH t.classDefinitions
+    LEFT JOIN FETCH t.testCases
+    WHERE t.taskId = :taskId
+""")
     Optional<TaskEntity> findTaskForRuntimeByTaskId(UUID taskId);
+
 
 }

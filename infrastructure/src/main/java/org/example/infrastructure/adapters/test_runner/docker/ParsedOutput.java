@@ -1,4 +1,4 @@
-package org.example.infrastructure.adapters.test_runner;
+package org.example.infrastructure.adapters.test_runner.docker;
 
 public record ParsedOutput(
         boolean success,

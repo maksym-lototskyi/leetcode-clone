@@ -1,9 +1,7 @@
-package org.example.infrastructure.adapters.test_runner;
+package org.example.infrastructure.adapters.test_runner.docker;
 import lombok.extern.slf4j.Slf4j;
 import org.example.application.task.use_cases.run.*;
 import org.springframework.stereotype.Component;
-
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,6 +25,7 @@ class DockerTestRunner implements TestRunner {
 
     @Override
     public TestRunResult run(LanguageDto language, ExecutionContext executionContext) throws IOException {
+        System.out.println("Running code in DockerTestRunner for language: " + language.name());
         Path tmpDir = createTempDir();
         String image = runtimeConfigResolver.getImageFor(language.name());
 
@@ -34,11 +33,16 @@ class DockerTestRunner implements TestRunner {
             prepareExecutionFiles(tmpDir, language, executionContext);
             addCustomClassDefinitions(executionContext.additionalClasses(), tmpDir, language.fileExtension());
 
-            if (hasErrors(compileUserCode(language, tmpDir, image))) {
-                return TestRunResult.compilationError(compileUserCode(language, tmpDir, image).stderr());
+            if(runtimeConfigResolver.hasCompileCommandFor(language.name())) {
+                log.info("Compiling code for language: {}", language.name());
+                ContainerExecutionResult compileResult = compileSubmittedCode(language, tmpDir, image);
+
+                if (hasErrors(compileResult)) {
+                    return TestRunResult.compilationError(compileResult.stderr());
+                }
             }
 
-            ContainerExecutionResult runResult = runUserCode(language, tmpDir, image);
+            ContainerExecutionResult runResult = runSubmittedCode(language, tmpDir, image);
             ParsedOutput parsedOutput = outputParser.parse(runResult.stdout());
 
             if (hasErrors(runResult)) {
@@ -56,7 +60,7 @@ class DockerTestRunner implements TestRunner {
     }
 
     private Path createTempDir() throws IOException {
-        Path tmpDir = Paths.get(System.getProperty("user.dir"), "tmp", UUID.randomUUID().toString());
+        Path tmpDir = Paths.get(System.getProperty("user.dir"),  "tmp", UUID.randomUUID().toString());
         Files.createDirectories(tmpDir);
         return tmpDir;
     }
@@ -71,15 +75,15 @@ class DockerTestRunner implements TestRunner {
         Files.writeString(tmpDir.resolve("Program" + language.fileExtension()), code);
     }
 
-    private ContainerExecutionResult compileUserCode(LanguageDto language, Path dir, String image)
+    private ContainerExecutionResult compileSubmittedCode(LanguageDto language, Path dir, String image)
             throws IOException, InterruptedException {
-        return ContainerExecutioner.compileUserCode(
+        return ContainerExecutioner.compileSourceCode(
                 dir, image, runtimeConfigResolver.getCompileCommandFor(language.name()));
     }
 
-    private ContainerExecutionResult runUserCode(LanguageDto language, Path dir, String image)
+    private ContainerExecutionResult runSubmittedCode(LanguageDto language, Path dir, String image)
             throws IOException, InterruptedException {
-        return ContainerExecutioner.runUserCode(
+        return ContainerExecutioner.runSourceCode(
                 dir, image, runtimeConfigResolver.getRunCommandFor(language.name()));
     }
 
