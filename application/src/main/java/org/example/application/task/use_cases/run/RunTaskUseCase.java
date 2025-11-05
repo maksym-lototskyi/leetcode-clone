@@ -5,15 +5,11 @@ import org.example.application.exception.NotFoundException;
 import org.example.application.language.ports.out.LanguageRepository;
 import org.example.application.task.ports.out.TaskRepository;
 import org.example.domain.class_definition.ClassDefinition;
-import org.example.domain.class_definition.ClassDefinitionId;
-import org.example.domain.class_definition.ClassImplementation;
 import org.example.domain.language.Language;
-import org.example.domain.language.LanguageId;
 import org.example.domain.submission.SubmissionResultStatus;
 import org.example.domain.task.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.example.application.task.use_cases.run.StatusDeterminer.determineStatus;
@@ -65,8 +61,8 @@ class RunTaskUseCase implements RunTaskInputBoundary {
         TestRunResult userResult = testRunner.run(languageDto, userExecutionContext);
         TestRunResult workingSolutionResult = testRunner.run(workingSolutionLanguageDto, workingSolutionExecutionContext);
 
-        SubmissionResultStatus status = determineStatus(userResult, workingSolutionResult.output(), task.getTimeLimitMs(), task.getMemoryLimitKb());
-        return new TaskRunResult(command.input(), workingSolutionResult.output(), userResult.output(), status == SubmissionResultStatus.ACCEPTED, userResult.executionTimeMs(), status);
+        SubmissionResultStatus status = determineStatus(userResult, workingSolutionResult.result(), task.getTimeLimitMs(), task.getMemoryLimitKb());
+        return new TaskRunResult(command.input(), workingSolutionResult.result(), userResult.result(), status == SubmissionResultStatus.ACCEPTED, userResult.executionTimeMs(), status);
     }
 
 }

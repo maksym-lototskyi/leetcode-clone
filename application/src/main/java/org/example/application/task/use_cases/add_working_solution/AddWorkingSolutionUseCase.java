@@ -23,19 +23,15 @@ class AddWorkingSolutionUseCase implements AddWorkingSolutionInputBoundary {
     }
 
     public void execute(AddWorkingSolutionCommand command){
-        Task task = taskRepository.loadTaskDefinition(TaskId.of(command.taskId()))
+        Task task = taskRepository.loadTaskForRuntime(TaskId.of(command.taskId()))
                 .orElseThrow(() -> new NotFoundException("Task not found with id: " + command.taskId()));
 
         Language language = repository.findByName(command.programmingLanguage())
                 .orElseThrow(() -> new NotFoundException("Language not found with name: " + command.programmingLanguage()));
 
-        List<TestCase> testCases = taskRepository.findAllTestCasesByTaskId(task.getTaskId());
+        WorkingSolution candidate = WorkingSolution.create(language.getId(), command.workingSolutionCode());
 
-        if(testCases.isEmpty()) throw new IllegalStateException("Cannot add working solution to task without test cases");
-
-        WorkingSolution candidate = new WorkingSolution(language.getId(), command.workingSolutionCode());
-
-        task.addWorkingSolution(candidate, testCases, validator);
+        task.addWorkingSolution(candidate, validator);
         taskRepository.save(task);
     }
 }

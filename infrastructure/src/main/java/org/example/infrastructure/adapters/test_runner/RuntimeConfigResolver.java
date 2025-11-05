@@ -1,7 +1,6 @@
 package org.example.infrastructure.adapters.test_runner;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.infrastructure.exception.UnknownRuntimeException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,16 +13,24 @@ public class RuntimeConfigResolver {
     public RuntimeConfigResolver(RuntimeProperties runtimeProperties) {
         this.runtimeProperties = runtimeProperties;
         runtimeProperties.getConfigs()
-                .forEach((lang, config) -> log.info("Loaded runtime config for language {}: image={}, command={}",
-                        lang, config.getImage(), config.getCommand()));
+                .forEach((lang, config) -> log.info("Loaded runtime config for language {}: image={}, compile-command={}, run-command={}",
+                        lang, config.getImage(), config.getCompileCommand(), config.getRunCommand()));
     }
 
-    public List<String> getCommandFor(String language) {
+    public List<String> getCompileCommandFor(String language){
+        return getCommandFor(language, true);
+    }
+    public List<String> getRunCommandFor(String language){
+        return getCommandFor(language, false);
+    }
+
+    private List<String> getCommandFor(String language, boolean isCompile) {
         RuntimeProperties.RuntimeConfig config = runtimeProperties.getConfigs().get(language);
         if (config == null) {
             throw new UnknownRuntimeException("Unknown runtime: " + language);
         }
-        return config.getCommand();
+        if(isCompile) return config.getCompileCommand();
+        return config.getRunCommand();
     }
 
     public String getImageFor(String language) {

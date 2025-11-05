@@ -8,7 +8,7 @@ public class StatusDeterminer {
 
         if(userResult.errorType() != null && userResult.errorType() == ErrorType.RUNTIME_ERROR) status = SubmissionResultStatus.RUNTIME_ERROR;
         else if(userResult.errorType() != null && userResult.errorType() == ErrorType.COMPILATION_ERROR) status = SubmissionResultStatus.COMPILE_ERROR;
-        else if(!userResult.output().equals(expectedOutput)) status = SubmissionResultStatus.WRONG_ANSWER;
+        else if(!userResult.result().equals(expectedOutput)) status = SubmissionResultStatus.WRONG_ANSWER;
         else if(userResult.executionTimeMs() > timeLimitMs) status = SubmissionResultStatus.TIME_LIMIT_EXCEEDED;
         else if(userResult.memoryUsageKb() > memoryLimitKb) status = SubmissionResultStatus.MEMORY_LIMIT_EXCEEDED;
         return status;

@@ -103,10 +103,15 @@ public class Task {
         return List.copyOf(topics);
     }
 
-    public void addWorkingSolution(WorkingSolution workingSolution, List<TestCase> testCases, WorkingSolutionValidator validator) {
+    public void addWorkingSolution(WorkingSolution workingSolution, WorkingSolutionValidator validator) {
         validator.validate(this, workingSolution, testCases);
         this.workingSolution = workingSolution;
     }
+
+    public void addTestCase(TestCase testCase) {
+        testCases.add(testCase);
+    }
+
     public record Constraint(String description) {
         public Constraint {
             if (description == null || description.isBlank()) {

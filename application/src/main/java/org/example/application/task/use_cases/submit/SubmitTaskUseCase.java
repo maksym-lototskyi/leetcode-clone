@@ -8,7 +8,6 @@ import org.example.application.task.ports.out.TaskRepository;
 import org.example.application.task.use_cases.run.*;
 import org.example.application.user.ports.out.UserRepository;
 import org.example.domain.class_definition.ClassDefinition;
-import org.example.domain.class_definition.ClassImplementation;
 import org.example.domain.language.Language;
 import org.example.domain.submission.Submission;
 import org.example.domain.submission.SubmissionResult;
@@ -82,9 +81,9 @@ class SubmitTaskUseCase implements SubmitTaskInputBoundary{
             );
             var runResult = taskRunner.run(languageDto, context);
 
-            TestRun failingTestCase = TestRun.failing(testCase.testCaseId(), runResult.output());
+            TestRun failingTestCase = TestRun.failing(testCase.testCaseId(), runResult.result());
 
-            if (!runResult.output().equals(testCase.expectedOutput().value()))
+            if (!runResult.result().equals(testCase.expectedOutput().value()))
                 return SubmissionResult.wrongAnswer(failingTestCase, passedTestCases, testCases.size());
 
             if (runResult.executionTimeMs() > task.getTimeLimitMs())

@@ -1,13 +1,10 @@
 package org.example.infrastructure.adapters.test_runner;
-
+import lombok.extern.slf4j.Slf4j;
 import org.example.application.task.use_cases.run.*;
-import org.example.infrastructure.exception.ProcessInterruptedException;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,124 +12,118 @@ import java.util.*;
 import java.util.stream.Stream;
 
 @Component
+@Slf4j
 class DockerTestRunner implements TestRunner {
-    private final RuntimeConfigResolver runtimeConfigResolver;
 
-    DockerTestRunner(RuntimeConfigResolver runtimeConfigResolver) {
+    private static final String INPUT_FILE = "input.json";
+    private static final String SIGNATURE_FILE = "signature.json";
+    private final RuntimeConfigResolver runtimeConfigResolver;
+    private final ExecutionOutputParser outputParser;
+
+    DockerTestRunner(RuntimeConfigResolver runtimeConfigResolver, ExecutionOutputParser outputParser) {
         this.runtimeConfigResolver = runtimeConfigResolver;
+        this.outputParser = outputParser;
     }
 
     @Override
     public TestRunResult run(LanguageDto language, ExecutionContext executionContext) throws IOException {
-        String currentDir = System.getProperty("user.dir");
-        Path tmpDir = Paths.get(currentDir, "tmp", UUID.randomUUID().toString());
-        Path codeFilePath = Paths.get(tmpDir.toString(), "Program" + language.fileExtension());
-        Path inputFile = tmpDir.resolve("input.json");
-        Path signatureFile = tmpDir.resolve("signature.json");
+        Path tmpDir = createTempDir();
+        String image = runtimeConfigResolver.getImageFor(language.name());
 
         try {
-            Files.createDirectories(tmpDir);
-            Files.createFile(codeFilePath);
+            prepareExecutionFiles(tmpDir, language, executionContext);
+            addCustomClassDefinitions(executionContext.additionalClasses(), tmpDir, language.fileExtension());
 
-            Files.writeString(inputFile, executionContext.input());
-            Files.writeString(signatureFile, executionContext.signature());
-
-            Path templatePath = copyTemplateToTmp(tmpDir, language);
-
-            String code = Files.readString(templatePath).formatted(executionContext.userCode());
-            Files.writeString(codeFilePath, code);
-
-            addCustomClassDefinitions(executionContext.customClassDefinitions(), tmpDir, language.fileExtension());
-
-            Process process = runUserCodeInContainer(
-                    tmpDir,
-                    runtimeConfigResolver.getImageFor(language.name()),
-                    runtimeConfigResolver.getCommandFor(language.name())
-            );
-
-            String errorOutput = read(process.getErrorStream());
-            String output = read(process.getInputStream());
-
-            if(!errorOutput.isEmpty()){
-                ErrorType errorType = ErrorType.fromErrorOutput(errorOutput);
-                if(errorType == ErrorType.RUNTIME_ERROR){
-                    return TestRunResult.runtimeError(errorOutput, 0, 0);
-                }
-                return TestRunResult.compilationError(errorOutput);
+            if (hasErrors(compileUserCode(language, tmpDir, image))) {
+                return TestRunResult.compilationError(compileUserCode(language, tmpDir, image).stderr());
             }
 
-            String[] outputLines = output.split("\n");
+            ContainerExecutionResult runResult = runUserCode(language, tmpDir, image);
+            ParsedOutput parsedOutput = outputParser.parse(runResult.stdout());
 
-            long executionTime = Long.parseLong(outputLines[0]);
-            String outputResult = outputLines[1];
-            return TestRunResult.success(outputResult, executionTime, 0);
+            if (hasErrors(runResult)) {
+                return TestRunResult.runtimeError(runResult.stderr(), parsedOutput.stdout(), 0, 0);
+            }
+            return TestRunResult.success(parsedOutput.result(), parsedOutput.stdout(), parsedOutput.executionTimeMs(), 0);
 
         } catch (InterruptedException e) {
-            throw new ProcessInterruptedException("Code execution was interrupted. Please try again.");
+            Thread.currentThread().interrupt();
+            log.error("Code execution was interrupted.", e);
+            throw new ProcessInterruptedException("Code execution was interrupted.", e);
         } finally {
             cleanUp(tmpDir);
         }
     }
 
-    private void addCustomClassDefinitions(Map<String, String> classDefinitions, Path path, String fileExtension) throws IOException {
-        for(Map.Entry<String, String> entry : classDefinitions.entrySet()) {
-            Path classDefPath = Paths.get(path.toString(), entry.getKey() + fileExtension);
-            Files.writeString(classDefPath, entry.getValue());
-        }
+    private Path createTempDir() throws IOException {
+        Path tmpDir = Paths.get(System.getProperty("user.dir"), "tmp", UUID.randomUUID().toString());
+        Files.createDirectories(tmpDir);
+        return tmpDir;
     }
 
-    private static String read(InputStream inputStream) throws IOException {
-        StringBuilder builder = new StringBuilder();
+    private void prepareExecutionFiles(Path tmpDir, LanguageDto language, ExecutionContext ctx)
+            throws IOException, InterruptedException {
+        Files.writeString(tmpDir.resolve(INPUT_FILE), ctx.input());
+        Files.writeString(tmpDir.resolve(SIGNATURE_FILE), ctx.signature());
 
-        try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))){
-            String line;
-            while((line = reader.readLine()) != null){
-                builder.append(line).append("\n");
-            }
+        Path template = copyTemplateToTmp(tmpDir, language);
+        String code = Files.readString(template).formatted(ctx.userCode());
+        Files.writeString(tmpDir.resolve("Program" + language.fileExtension()), code);
+    }
+
+    private ContainerExecutionResult compileUserCode(LanguageDto language, Path dir, String image)
+            throws IOException, InterruptedException {
+        return ContainerExecutioner.compileUserCode(
+                dir, image, runtimeConfigResolver.getCompileCommandFor(language.name()));
+    }
+
+    private ContainerExecutionResult runUserCode(LanguageDto language, Path dir, String image)
+            throws IOException, InterruptedException {
+        return ContainerExecutioner.runUserCode(
+                dir, image, runtimeConfigResolver.getRunCommandFor(language.name()));
+    }
+
+    private boolean hasErrors(ContainerExecutionResult result) {
+        return result.stderr() != null && !result.stderr().isBlank();
+    }
+
+    private void addCustomClassDefinitions(List<AdditionalClassDto> additionalClasses, Path path, String ext)
+            throws IOException {
+        for (AdditionalClassDto c : additionalClasses) {
+            Files.writeString(path.resolve(c.className() + ext), c.sourceCode());
         }
-        return builder.toString();
     }
 
     private Path copyTemplateToTmp(Path tmpDir, LanguageDto language) throws IOException, InterruptedException {
         String templateFileName = language.name() + "_template";
-        Process processInit = new ProcessBuilder(
+        Process process = new ProcessBuilder(
                 "docker", "run", "--rm",
                 "-v", tmpDir + ":/app/tmp",
                 runtimeConfigResolver.getImageFor(language.name()),
                 "bash", "-c", "cp /app/templates/" + templateFileName + " /app/tmp"
-        )
-                .redirectErrorStream(true)
-                .start();
+        ).redirectErrorStream(true).start();
 
-        processInit.waitFor();
+        try (var input = process.getInputStream()) {
+            BufferedStreamReader.read(input);
+        }
 
-        read(processInit.getInputStream());
-        return Path.of(tmpDir.toString(), templateFileName);
+        if (process.waitFor() != 0) {
+            throw new IOException("Failed to copy template for language: " + language.name());
+        }
+
+        return tmpDir.resolve(templateFileName);
     }
 
-    private Process runUserCodeInContainer(Path tmpDir, String runtimeImage, List<String> execCommands) throws IOException {
-        String[] dockerStartCommands = {
-                "docker", "run", "--rm",
-                "-v", tmpDir + ":/app",
-                runtimeImage};
-
-        List<String> commands = new ArrayList<>(List.of(dockerStartCommands));
-        commands.addAll(execCommands);
-
-        return new ProcessBuilder(commands).start();
-    }
-
-    private static void cleanUp(Path dir) throws IOException {
-        try(Stream<Path> paths = Files.walk(dir)){
-            paths
-                    .sorted(Comparator.reverseOrder())
-                    .forEach(f -> {
-                        try {
-                            Files.delete(f);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
+    private void cleanUp(Path dir) {
+        try (Stream<Path> paths = Files.walk(dir)) {
+            paths.sorted(Comparator.reverseOrder()).forEach(f -> {
+                try {
+                    Files.deleteIfExists(f);
+                } catch (IOException e) {
+                    log.error("Failed to delete temporary file: " + f, e);
+                }
+            });
+        } catch (IOException ignored) {
         }
     }
 }

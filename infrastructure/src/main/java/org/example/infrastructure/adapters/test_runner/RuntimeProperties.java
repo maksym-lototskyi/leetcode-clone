@@ -1,7 +1,6 @@
 package org.example.infrastructure.adapters.test_runner;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,13 +22,22 @@ public class RuntimeProperties {
 
     public static class RuntimeConfig {
         private String image;
-        private List<String> command;
+        private List<String> compileCommand;
+        private List<String> runCommand;
 
         public String getImage() { return image; }
         public void setImage(String image) { this.image = image; }
 
-        public List<String> getCommand() { return command; }
-        public void setCommand(List<String> command) { this.command = command; }
+        public List<String> getCompileCommand() { return compileCommand; }
+        public void setCompileCommand(List<String> compileCommand) { this.compileCommand = compileCommand; }
+
+        public List<String> getRunCommand() {
+            return runCommand;
+        }
+
+        public void setRunCommand(List<String> runCommand) {
+            this.runCommand = runCommand;
+        }
     }
 }
 

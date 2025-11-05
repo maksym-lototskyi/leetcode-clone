@@ -1,15 +1,24 @@
 runtimes:
   configs:
     java:
-      image: "java-runner:1.1"
-      command:
-        - bash
-        - -c
-        - javac -cp /app/dep/myapp.jar /app/exec/Program.java && java -cp /app/exec:/app/dep/myapp.jar Program
+      image: "java-runner:1.2"
+      compile-command:
+        - javac
+        - -cp
+        - /app/dep/myapp.jar
+        - -d
+        - /app/exec
+        - /app/exec/Program.java
+      run-command:
+        - java
+        - -cp
+        - /app/dep/myapp.jar:/app/exec
+        - Program
 
     python:
       image: "python-runner:1.0"
-      command:
+      run-command:
         - python3
         - /app/Program.py
+
 
