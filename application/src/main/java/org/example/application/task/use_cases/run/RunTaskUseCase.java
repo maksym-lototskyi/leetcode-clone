@@ -45,8 +45,8 @@ class RunTaskUseCase implements RunTaskInputBoundary {
 
         String convertedSignature = converter.convert(task.getTaskSignature());
 
-        LanguageDto languageDto = new LanguageDto(userLanguage.getName(), userLanguage.getFileExtension());
-        LanguageDto workingSolutionLanguageDto = new LanguageDto(workingSolutionLanguage.getName(), workingSolutionLanguage.getFileExtension());
+        LanguageDto languageDto = new LanguageDto(userLanguage.getName().value(), userLanguage.getFileExtension().value());
+        LanguageDto workingSolutionLanguageDto = new LanguageDto(workingSolutionLanguage.getName().value(), workingSolutionLanguage.getFileExtension().value());
 
         ExecutionContext userExecutionContext = new ExecutionContext(command.sourceCode(),
                 command.input(),
@@ -62,7 +62,7 @@ class RunTaskUseCase implements RunTaskInputBoundary {
         TestRunResult workingSolutionResult = testRunner.run(workingSolutionLanguageDto, workingSolutionExecutionContext);
 
         SubmissionResultStatus status = determineStatus(userResult, workingSolutionResult.result(), task.getTimeLimitMs(), task.getMemoryLimitKb());
-        return new TaskRunResult(command.input(), workingSolutionResult.result(), userResult.result(), status == SubmissionResultStatus.ACCEPTED, userResult.executionTimeMs(), status);
+        return new TaskRunResult(command.input(), workingSolutionResult.result(), userResult.result(), userResult.error(), userResult.stdout(),status == SubmissionResultStatus.ACCEPTED, userResult.executionTimeMs(), status);
     }
 
 }

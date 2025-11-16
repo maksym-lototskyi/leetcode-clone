@@ -45,6 +45,7 @@ public class TaskController {
         try {
             return ResponseEntity.ok(runTaskUseCase.execute(dto));
         } catch (IOException e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.status(500).build();
         }
     }

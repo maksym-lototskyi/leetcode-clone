@@ -5,7 +5,7 @@ import java.util.UUID;
 public record ClassImplementationId(UUID value) {
     public ClassImplementationId {
         if (value == null) {
-            throw new IllegalArgumentException("ClassImplementationId value cannot be null");
+            throw new IllegalArgumentException("ClassImplementationId name cannot be null");
         }
     }
 

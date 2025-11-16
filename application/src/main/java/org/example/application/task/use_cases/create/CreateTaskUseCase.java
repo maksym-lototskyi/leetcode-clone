@@ -4,7 +4,6 @@ import org.example.application.class_definition.ports.out.ClassDefinitionReposit
 import org.example.application.exception.NotFoundException;
 import org.example.application.task.ports.out.TaskRepository;
 import org.example.application.topic.ports.out.TopicRepository;
-import org.example.domain.class_definition.ClassDefinition;
 import org.example.domain.class_definition.ClassDefinitionId;
 import org.example.domain.task.Task;
 import org.example.domain.task.TaskDescription;
@@ -30,9 +29,11 @@ class CreateTaskUseCase implements CreateTaskInputBoundary{
     }
 
     public UUID execute(CreateTaskCommand command) {
-        List<Topic> topics = topicRepository.findAll(command.topicIds().stream().map(TopicId::new).toList());
+        boolean topicsExist = topicRepository.existAllByIds(
+                command.topicIds().stream().map(TopicId::new).toList()
+        );
 
-        if (topics.size() != command.topicIds().size()) {
+        if (!topicsExist) {
             throw new NotFoundException("One or more topics not found");
         }
 
@@ -42,7 +43,7 @@ class CreateTaskUseCase implements CreateTaskInputBoundary{
         if(!notFoundClasses.isEmpty()) throw new NotFoundException("Classes not found for names: " + notFoundClasses);
 
         List<TaskSignature.Parameter> parameters = createParameters(command.parameterTypes(), command.parameterNames());
-        List<ClassDefinition> definitions = classDefinitionRepository.getAllByNames(command.classDefinitionNames());
+        List<ClassDefinitionId> definitionIds = classDefinitionRepository.findIdsByNames(command.classDefinitionNames());
 
         Task task = Task.draft(
                 TaskSignature.of(
@@ -53,9 +54,9 @@ class CreateTaskUseCase implements CreateTaskInputBoundary{
                 command.title(),
                 TaskDescription.of(command.description()),
                 TaskLevel.valueOf(command.taskLevel()),
-                topics,
+                command.topicIds().stream().map(TopicId::new).toList(),
                 command.constraints().stream().map(Task.Constraint::new).toList(),
-                definitions.stream().map(ClassDefinition::id).toList(),
+                definitionIds,
                 command.timeLimitMs(),
                 command.memoryLimitKb()
         );

@@ -7,7 +7,7 @@ public final class Output {
 
     public Output (String value, IOValidator validator) {
         if (value == null) {
-            throw new IllegalArgumentException("Output value cannot be null");
+            throw new IllegalArgumentException("Output name cannot be null");
         }
         if (!validator.isValid(value)) {
             throw new IllegalArgumentException("Invalid format of output data");

@@ -15,9 +15,8 @@ public class SubmitTaskInputBoundaryFactory {
             SubmissionRepository submissionRepository,
             LanguageRepository languageRepository,
             ClassDefinitionRepository classDefinitionRepository,
-            TestRunner taskRunner,
-            ObjectConverter converter
+            TestCaseEvaluator testCaseEvaluator
     ){
-        return new SubmitTaskUseCase(taskRepository, userRepository, submissionRepository, languageRepository, classDefinitionRepository, taskRunner, converter);
+        return new SubmitTaskUseCase(taskRepository, userRepository, submissionRepository, languageRepository, classDefinitionRepository, testCaseEvaluator);
     }
 }

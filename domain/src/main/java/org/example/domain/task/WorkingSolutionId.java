@@ -5,7 +5,7 @@ import java.util.UUID;
 public record WorkingSolutionId(UUID value) {
     public WorkingSolutionId {
         if (value == null) {
-            throw new IllegalArgumentException("WorkingSolutionId value cannot be null");
+            throw new IllegalArgumentException("WorkingSolutionId name cannot be null");
         }
     }
 

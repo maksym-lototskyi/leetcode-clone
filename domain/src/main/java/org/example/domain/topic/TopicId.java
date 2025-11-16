@@ -5,7 +5,7 @@ import java.util.UUID;
 public record TopicId(UUID value) {
     public TopicId {
         if (value == null) {
-            throw new IllegalArgumentException("TopicId value cannot be null");
+            throw new IllegalArgumentException("TopicId name cannot be null");
         }
     }
 
@@ -15,7 +15,7 @@ public record TopicId(UUID value) {
 
     public static TopicId of(UUID value) {
         if (value == null) {
-            throw new IllegalArgumentException("TopicId value cannot be null");
+            throw new IllegalArgumentException("TopicId name cannot be null");
         }
         return new TopicId(value);
     }

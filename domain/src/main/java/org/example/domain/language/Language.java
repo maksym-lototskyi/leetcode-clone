@@ -5,15 +5,15 @@ import lombok.Getter;
 @Getter
 public final class Language {
     private final LanguageId id;
-    private final String name;
+    private final LanguageName name;
     private Version version;
-    private final String fileExtension;
+    private final FileExtension fileExtension;
 
-    public Language(LanguageId languageId, String name, Version version, String fileExtension) {
-        if (name == null || name.isBlank()) throw new IllegalArgumentException("Name cannot be null or blank");
+    public Language(LanguageId languageId, LanguageName name, Version version, FileExtension fileExtension) {
+        if (name == null) throw new IllegalArgumentException("Name cannot be null");
         if (version == null) throw new IllegalArgumentException("Version cannot be null");
         if(languageId == null) throw new IllegalArgumentException("Language id cannot be null");
-        if(fileExtension == null || fileExtension.isBlank()) throw new IllegalArgumentException("File extension cannot be null or blank");
+        if(fileExtension == null) throw new IllegalArgumentException("File extension cannot be null");
 
         this.id = languageId;
         this.name = name;
@@ -21,7 +21,7 @@ public final class Language {
         this.fileExtension = fileExtension;
     }
 
-    public static Language create(String name, Version version, String fileExtension) {
+    public static Language create(LanguageName name, Version version, FileExtension fileExtension) {
         return new Language(LanguageId.generate(), name, version, fileExtension);
     }
 

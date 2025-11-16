@@ -10,14 +10,14 @@ public final class Input {
 
     public Input (String input, IOValidator validator) {
         this.input = input;
-        Objects.requireNonNull(input, "Input value cannot be null");
+        Objects.requireNonNull(input, "Input name cannot be null");
         Objects.requireNonNull(validator, "Validator cannot be null");
 
         if (input.isEmpty()) {
-            throw new IllegalArgumentException("Input value cannot be empty");
+            throw new IllegalArgumentException("Input name cannot be empty");
         }
         if(!validator.isValid(input)) {
-            throw new IllegalArgumentException("Input value is not valid");
+            throw new IllegalArgumentException("Input name is not valid");
         }
     }
 

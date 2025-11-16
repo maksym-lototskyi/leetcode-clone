@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 public record TaskSignature(
-        String functionName,
+        String methodName,
         List<Parameter> parameters,
         String returnType
 ) {
@@ -16,7 +16,7 @@ public record TaskSignature(
     }
 
     public TaskSignature {
-        Objects.requireNonNull(functionName, "Function name cannot be null");
+        Objects.requireNonNull(methodName, "Function name cannot be null");
         Objects.requireNonNull(parameters, "Parameters cannot be null");
         Objects.requireNonNull(returnType, "Return type cannot be null");
         if (parameters.isEmpty()) throw new IllegalArgumentException("There must be at least one parameter");

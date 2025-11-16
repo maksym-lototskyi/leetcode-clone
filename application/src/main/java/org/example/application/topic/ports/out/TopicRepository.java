@@ -6,5 +6,6 @@ import org.example.domain.topic.TopicId;
 import java.util.List;
 
 public interface TopicRepository {
-    List<Topic> findAll(List<TopicId> topicIds);
+    List<Topic> findAllByIds(List<TopicId> topicIds);
+    boolean existAllByIds(List<TopicId> topicIds);
 }

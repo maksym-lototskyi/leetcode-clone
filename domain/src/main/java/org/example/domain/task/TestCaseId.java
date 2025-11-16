@@ -5,7 +5,7 @@ import java.util.UUID;
 public record TestCaseId(UUID value) {
     public TestCaseId {
         if (value == null) {
-            throw new IllegalArgumentException("TestCaseId value cannot be null");
+            throw new IllegalArgumentException("TestCaseId name cannot be null");
         }
     }
 
