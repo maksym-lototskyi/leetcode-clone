@@ -1,8 +1,8 @@
 package org.example.infrastructure.persistence.jpa.mapper;
 
-import org.example.domain.class_definition.ClassImplementation;
-import org.example.domain.class_definition.ClassImplementationId;
-import org.example.domain.language.LanguageId;
+import org.example.domain.model.class_definition.ClassImplementation;
+import org.example.domain.model.class_definition.ClassImplementationId;
+import org.example.domain.model.language.LanguageId;
 import org.example.infrastructure.persistence.jpa.model.ClassImplementationEntity;
 
 public class ClassImplementationMapper {

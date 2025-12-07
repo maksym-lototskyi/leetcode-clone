@@ -1,8 +1,6 @@
 package org.example.application.task.use_cases.run;
 
-import org.example.domain.submission.SubmissionResultStatus;
-
-import java.util.List;
+import org.example.domain.model.submission.SubmissionResultStatus;
 
 public record TaskRunResult(
         String input,

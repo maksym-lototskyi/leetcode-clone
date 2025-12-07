@@ -2,8 +2,8 @@ package org.example.infrastructure.persistence.jpa.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.example.domain.task.TaskLevel;
-import org.example.domain.task.TaskStatus;
+import org.example.domain.model.task.TaskLevel;
+import org.example.domain.model.task.TaskStatus;
 
 import java.util.List;
 import java.util.Set;

@@ -2,11 +2,11 @@ package org.example.application.task.use_cases.add_example;
 
 import org.example.application.exception.NotFoundException;
 import org.example.application.task.ports.out.TaskRepository;
-import org.example.domain.task.Example;
-import org.example.domain.task.service.IOValidator;
-import org.example.domain.task.Input;
-import org.example.domain.task.Output;
-import org.example.domain.task.TaskId;
+import org.example.domain.model.task.Example;
+import org.example.domain.model.task.IOValidator;
+import org.example.domain.model.task.Input;
+import org.example.domain.model.task.Output;
+import org.example.domain.model.task.TaskId;
 
 public class AddExampleUseCase implements AddExampleInputBoundary {
     private final TaskRepository taskRepository;

@@ -1,6 +1,5 @@
 package org.example.infrastructure.persistence.jpa.repository;
 
-import org.example.domain.language.Language;
 import org.example.infrastructure.persistence.jpa.model.LanguageEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 

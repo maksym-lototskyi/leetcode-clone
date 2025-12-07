@@ -1,7 +1,7 @@
 package org.example.application.class_definition.ports.out;
 
-import org.example.domain.class_definition.ClassDefinition;
-import org.example.domain.class_definition.ClassDefinitionId;
+import org.example.domain.model.class_definition.ClassDefinition;
+import org.example.domain.model.class_definition.ClassDefinitionId;
 
 import java.util.Collection;
 import java.util.List;

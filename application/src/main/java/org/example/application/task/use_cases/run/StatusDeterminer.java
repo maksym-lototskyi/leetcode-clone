@@ -1,6 +1,6 @@
 package org.example.application.task.use_cases.run;
 
-import org.example.domain.submission.SubmissionResultStatus;
+import org.example.domain.model.submission.SubmissionResultStatus;
 
 public class StatusDeterminer {
     public static SubmissionResultStatus determineStatus(TestRunResult userResult, String expectedOutput, long timeLimitMs, long memoryLimitKb) {

@@ -1,10 +1,10 @@
 package org.example.infrastructure.persistence.jpa.mapper;
 
-import org.example.domain.task.Input;
-import org.example.domain.task.Output;
-import org.example.domain.task.TestCase;
-import org.example.domain.task.TestCaseId;
-import org.example.domain.task.service.IOValidator;
+import org.example.domain.model.task.Input;
+import org.example.domain.model.task.Output;
+import org.example.domain.model.task.TestCase;
+import org.example.domain.model.task.TestCaseId;
+import org.example.domain.model.task.IOValidator;
 import org.example.infrastructure.persistence.jpa.model.TestCaseEntity;
 
 public class TestCaseMapper {

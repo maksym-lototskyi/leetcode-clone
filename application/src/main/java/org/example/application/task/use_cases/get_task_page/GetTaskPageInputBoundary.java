@@ -1,6 +1,6 @@
 package org.example.application.task.use_cases.get_task_page;
 
-import org.example.domain.task.TaskSummary;
+import org.example.domain.model.task.TaskSummary;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package org.example.application.topic.ports.out;
 
-import org.example.domain.topic.Topic;
-import org.example.domain.topic.TopicId;
+import org.example.domain.model.topic.Topic;
+import org.example.domain.model.topic.TopicId;
 
 import java.util.List;
 

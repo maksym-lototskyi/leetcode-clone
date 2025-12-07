@@ -3,16 +3,11 @@ package org.example.application.task.use_cases.add_working_solution;
 import org.example.application.exception.NotFoundException;
 import org.example.application.language.ports.out.LanguageRepository;
 import org.example.application.task.ports.out.TaskRepository;
-import org.example.application.task.use_cases.submit.TestCaseEvaluator;
-import org.example.domain.language.Language;
-import org.example.domain.submission.SubmissionResult;
-import org.example.domain.task.Task;
-import org.example.domain.task.TaskId;
-import org.example.domain.task.TestCase;
-import org.example.domain.task.WorkingSolution;
-import org.example.domain.task.service.WorkingSolutionValidator;
-
-import java.util.List;
+import org.example.domain.model.language.Language;
+import org.example.domain.model.task.Task;
+import org.example.domain.model.task.TaskId;
+import org.example.domain.model.task.WorkingSolution;
+import org.example.domain.model.task.WorkingSolutionValidator;
 
 class AddWorkingSolutionUseCase implements AddWorkingSolutionInputBoundary {
     private final TaskRepository taskRepository;

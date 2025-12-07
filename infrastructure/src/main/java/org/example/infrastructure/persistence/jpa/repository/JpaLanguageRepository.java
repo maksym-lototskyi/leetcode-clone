@@ -1,13 +1,12 @@
 package org.example.infrastructure.persistence.jpa.repository;
 
 import org.example.application.language.ports.out.LanguageRepository;
-import org.example.domain.language.Language;
-import org.example.domain.language.LanguageId;
+import org.example.domain.model.language.Language;
+import org.example.domain.model.language.LanguageId;
 import org.example.infrastructure.persistence.jpa.mapper.LanguageMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
 class JpaLanguageRepository implements LanguageRepository {

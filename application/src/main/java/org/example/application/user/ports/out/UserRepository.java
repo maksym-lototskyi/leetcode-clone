@@ -1,7 +1,7 @@
 package org.example.application.user.ports.out;
 
-import org.example.domain.user.User;
-import org.example.domain.user.UserId;
+import org.example.domain.model.user.User;
+import org.example.domain.model.user.UserId;
 
 import java.util.Optional;
 

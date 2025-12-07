@@ -2,8 +2,9 @@ package org.example.application.task.use_cases.add_test_case;
 
 import org.example.application.exception.NotFoundException;
 import org.example.application.task.ports.out.TaskRepository;
+import org.example.domain.model.task.*;
 import org.example.domain.task.*;
-import org.example.domain.task.service.IOValidator;
+import org.example.domain.model.task.IOValidator;
 
 class AddTestCaseUseCase implements AddTestCaseInputBoundary {
     private final TaskRepository taskRepository;

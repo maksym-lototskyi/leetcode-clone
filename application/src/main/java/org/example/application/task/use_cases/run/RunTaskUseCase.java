@@ -4,9 +4,12 @@ import org.example.application.class_definition.ports.out.ClassDefinitionReposit
 import org.example.application.exception.NotFoundException;
 import org.example.application.language.ports.out.LanguageRepository;
 import org.example.application.task.ports.out.TaskRepository;
-import org.example.domain.class_definition.ClassDefinition;
-import org.example.domain.language.Language;
-import org.example.domain.submission.SubmissionResultStatus;
+import org.example.domain.model.class_definition.ClassDefinition;
+import org.example.domain.model.language.Language;
+import org.example.domain.model.submission.SubmissionResultStatus;
+import org.example.domain.model.task.Task;
+import org.example.domain.model.task.TaskId;
+import org.example.domain.model.task.WorkingSolution;
 import org.example.domain.task.*;
 
 import java.io.IOException;

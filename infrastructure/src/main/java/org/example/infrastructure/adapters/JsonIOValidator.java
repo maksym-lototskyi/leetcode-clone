@@ -2,7 +2,7 @@ package org.example.infrastructure.adapters;
 
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
-import org.example.domain.task.service.IOValidator;
+import org.example.domain.model.task.IOValidator;
 import org.springframework.stereotype.Component;
 
 @Component

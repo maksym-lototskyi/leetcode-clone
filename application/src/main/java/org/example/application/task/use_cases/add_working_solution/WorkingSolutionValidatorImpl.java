@@ -5,13 +5,12 @@ import org.example.application.exception.NotFoundException;
 import org.example.application.language.ports.out.LanguageRepository;
 import org.example.application.task.use_cases.run.AdditionalClassDto;
 import org.example.application.task.use_cases.submit.TestCaseEvaluator;
-import org.example.domain.class_definition.ClassDefinition;
-import org.example.domain.language.Language;
-import org.example.domain.submission.SubmissionResultStatus;
-import org.example.domain.task.Task;
-import org.example.domain.task.WorkingSolution;
-import org.example.domain.task.exception.WorkingSolutionNotValidException;
-import org.example.domain.task.service.WorkingSolutionValidator;
+import org.example.domain.model.class_definition.ClassDefinition;
+import org.example.domain.model.language.Language;
+import org.example.domain.model.task.Task;
+import org.example.domain.model.task.WorkingSolution;
+import org.example.domain.model.task.WorkingSolutionNotValidException;
+import org.example.domain.model.task.WorkingSolutionValidator;
 
 import java.util.List;
 

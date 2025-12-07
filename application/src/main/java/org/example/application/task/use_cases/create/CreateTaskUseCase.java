@@ -4,13 +4,12 @@ import org.example.application.class_definition.ports.out.ClassDefinitionReposit
 import org.example.application.exception.NotFoundException;
 import org.example.application.task.ports.out.TaskRepository;
 import org.example.application.topic.ports.out.TopicRepository;
-import org.example.domain.class_definition.ClassDefinitionId;
-import org.example.domain.task.Task;
-import org.example.domain.task.TaskDescription;
-import org.example.domain.task.TaskLevel;
-import org.example.domain.task.TaskSignature;
-import org.example.domain.topic.Topic;
-import org.example.domain.topic.TopicId;
+import org.example.domain.model.class_definition.ClassDefinitionId;
+import org.example.domain.model.task.Task;
+import org.example.domain.model.task.TaskDescription;
+import org.example.domain.model.task.TaskLevel;
+import org.example.domain.model.task.TaskSignature;
+import org.example.domain.model.topic.TopicId;
 
 import java.util.ArrayList;
 import java.util.List;

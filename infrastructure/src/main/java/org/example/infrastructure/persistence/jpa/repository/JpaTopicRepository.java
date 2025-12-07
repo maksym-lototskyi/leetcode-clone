@@ -1,8 +1,8 @@
 package org.example.infrastructure.persistence.jpa.repository;
 
 import org.example.application.topic.ports.out.TopicRepository;
-import org.example.domain.topic.Topic;
-import org.example.domain.topic.TopicId;
+import org.example.domain.model.topic.Topic;
+import org.example.domain.model.topic.TopicId;
 import org.example.infrastructure.persistence.jpa.mapper.TopicMapper;
 import org.springframework.stereotype.Repository;
 

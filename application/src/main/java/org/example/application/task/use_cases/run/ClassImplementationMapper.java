@@ -1,8 +1,8 @@
 package org.example.application.task.use_cases.run;
 
 import org.example.application.exception.NotFoundException;
-import org.example.domain.class_definition.ClassDefinition;
-import org.example.domain.language.LanguageId;
+import org.example.domain.model.class_definition.ClassDefinition;
+import org.example.domain.model.language.LanguageId;
 
 import java.util.ArrayList;
 import java.util.List;

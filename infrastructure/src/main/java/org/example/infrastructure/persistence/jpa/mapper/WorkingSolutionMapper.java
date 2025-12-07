@@ -1,6 +1,6 @@
 package org.example.infrastructure.persistence.jpa.mapper;
 
-import org.example.domain.task.WorkingSolution;
+import org.example.domain.model.task.WorkingSolution;
 import org.example.infrastructure.persistence.jpa.model.LanguageEntity;
 import org.example.infrastructure.persistence.jpa.model.WorkingSolutionEntity;
 

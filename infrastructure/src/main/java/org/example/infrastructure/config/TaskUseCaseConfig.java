@@ -20,9 +20,8 @@ import org.example.application.task.use_cases.run.RunTaskInputBoundaryFactory;
 import org.example.application.task.use_cases.run.TestRunner;
 import org.example.application.task.use_cases.submit.TestCaseEvaluator;
 import org.example.application.topic.ports.out.TopicRepository;
-import org.example.domain.task.TestCase;
-import org.example.domain.task.service.IOValidator;
-import org.example.domain.task.service.WorkingSolutionValidator;
+import org.example.domain.model.task.IOValidator;
+import org.example.domain.model.task.WorkingSolutionValidator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

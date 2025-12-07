@@ -1,8 +1,8 @@
 package org.example.infrastructure.persistence.jpa.repository;
 
 import org.example.application.class_definition.ports.out.ClassDefinitionRepository;
-import org.example.domain.class_definition.ClassDefinition;
-import org.example.domain.class_definition.ClassDefinitionId;
+import org.example.domain.model.class_definition.ClassDefinition;
+import org.example.domain.model.class_definition.ClassDefinitionId;
 import org.example.infrastructure.persistence.jpa.mapper.ClassDefinitionMapper;
 import org.example.infrastructure.persistence.jpa.model.ClassDefinitionEntity;
 import org.springframework.stereotype.Repository;

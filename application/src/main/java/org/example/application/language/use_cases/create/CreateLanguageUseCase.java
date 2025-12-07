@@ -1,10 +1,10 @@
 package org.example.application.language.use_cases.create;
 
 import org.example.application.language.ports.out.LanguageRepository;
-import org.example.domain.language.FileExtension;
-import org.example.domain.language.Language;
-import org.example.domain.language.LanguageName;
-import org.example.domain.language.Version;
+import org.example.domain.model.language.FileExtension;
+import org.example.domain.model.language.Language;
+import org.example.domain.model.language.LanguageName;
+import org.example.domain.model.language.Version;
 
 import java.util.UUID;
 

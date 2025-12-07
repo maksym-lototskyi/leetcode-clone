@@ -1,6 +1,6 @@
 package org.example.application.task.use_cases.run;
 
-import org.example.domain.language.Language;
+import org.example.domain.model.language.Language;
 
 public class LanguageMapper {
     public static LanguageDto map(Language language){

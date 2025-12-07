@@ -1,11 +1,9 @@
 package org.example.infrastructure.persistence.jpa.repository;
 
-import org.example.domain.topic.TopicId;
 import org.example.infrastructure.persistence.jpa.model.TopicEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 

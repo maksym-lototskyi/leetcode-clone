@@ -1,6 +1,6 @@
 package org.example.infrastructure.persistence.jpa.repository;
 
-import org.example.domain.task.TaskSummary;
+import org.example.domain.model.task.TaskSummary;
 import org.example.infrastructure.persistence.jpa.model.TaskEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

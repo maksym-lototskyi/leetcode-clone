@@ -1,10 +1,11 @@
 package org.example.infrastructure.persistence.jpa.mapper;
 
-import org.example.domain.class_definition.ClassDefinitionId;
-import org.example.domain.language.LanguageId;
+import org.example.domain.model.class_definition.ClassDefinitionId;
+import org.example.domain.model.language.LanguageId;
+import org.example.domain.model.task.*;
 import org.example.domain.task.*;
-import org.example.domain.task.service.IOValidator;
-import org.example.domain.topic.TopicId;
+import org.example.domain.model.task.IOValidator;
+import org.example.domain.model.topic.TopicId;
 import org.example.infrastructure.persistence.jpa.model.*;
 
 import java.util.List;

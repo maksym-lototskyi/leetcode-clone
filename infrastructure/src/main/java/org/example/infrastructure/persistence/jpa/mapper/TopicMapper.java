@@ -1,6 +1,6 @@
 package org.example.infrastructure.persistence.jpa.mapper;
 
-import org.example.domain.topic.Topic;
+import org.example.domain.model.topic.Topic;
 import org.example.infrastructure.persistence.jpa.model.TopicEntity;
 
 public class TopicMapper {

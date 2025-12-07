@@ -1,0 +1,9 @@
+package org.example.domain.model.task;
+
+import org.example.domain.model.task.Task;
+import org.example.domain.model.task.WorkingSolution;
+
+public interface WorkingSolutionValidator {
+    void validate(Task task, WorkingSolution workingSolution);
+}
+

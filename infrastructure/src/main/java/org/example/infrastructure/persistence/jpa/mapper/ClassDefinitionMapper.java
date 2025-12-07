@@ -1,10 +1,9 @@
 package org.example.infrastructure.persistence.jpa.mapper;
 
-import org.example.domain.class_definition.ClassDefinition;
-import org.example.domain.class_definition.ClassDefinitionId;
+import org.example.domain.model.class_definition.ClassDefinition;
+import org.example.domain.model.class_definition.ClassDefinitionId;
 import org.example.infrastructure.persistence.jpa.model.ClassDefinitionEntity;
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ClassDefinitionMapper {
