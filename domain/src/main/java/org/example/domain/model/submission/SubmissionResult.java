@@ -1,12 +1,6 @@
 package org.example.domain.model.submission;
 
-public sealed interface SubmissionResult permits
-        AcceptedResult,
-        WrongAnswerResult,
-        CompileErrorResult,
-        RuntimeErrorResult,
-        TimeLimitExceededResult,
-        MemoryLimitExceededResult{
+public sealed interface SubmissionResult permits AcceptedResult, FailedSubmissionResult {
     SubmissionResultStatus status();
 
     static SubmissionResult accepted(long runtimeInMs, long memoryInKb, int testCasesPassed, int totalTestCases) {

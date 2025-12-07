@@ -18,7 +18,7 @@ public class AddExampleUseCase implements AddExampleInputBoundary {
     }
 
     public void execute(AddExampleCommand command){
-        taskRepository.loadTaskDefinition(TaskId.of(command.taskId())).ifPresentOrElse(task -> {
+        taskRepository.findDraftById(TaskId.of(command.taskId())).ifPresentOrElse(task -> {
             Input input = new Input(command.input(), ioValidator);
             Output output = new Output(command.output(), ioValidator);
             String explanation = command.explanation();

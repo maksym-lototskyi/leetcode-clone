@@ -9,6 +9,7 @@ import org.example.domain.model.task.TestCase;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 public class TestCaseEvaluator {
     private final TestRunner taskRunner;
@@ -20,7 +21,7 @@ public class TestCaseEvaluator {
     }
 
     public SubmissionResult evaluateTestCases(Task task, Language language, List<AdditionalClassDto> classes, String sourceCode) {
-        List<TestCase> testCases = task.getTestCases();
+        Set<TestCase> testCases = task.getTestCases();
         long totalExecutionTime = 0;
         long totalMemoryUsed = 0;
 
@@ -33,7 +34,7 @@ public class TestCaseEvaluator {
                     converter.convert(task.getTaskSignature()),
                     classes
             );
-            TestRunResult runResult = null;
+            TestRunResult runResult;
             try {
                 runResult = taskRunner.run(LanguageMapper.map(language), context);
             } catch (IOException e) {

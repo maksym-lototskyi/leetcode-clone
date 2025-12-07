@@ -1,10 +1,7 @@
 package org.example.infrastructure.persistence.jpa.mapper;
 
-import org.example.domain.model.task.Input;
-import org.example.domain.model.task.Output;
-import org.example.domain.model.task.TestCase;
-import org.example.domain.model.task.TestCaseId;
-import org.example.domain.model.task.IOValidator;
+import org.example.domain.model.task.*;
+import org.example.infrastructure.persistence.jpa.model.TaskEntity;
 import org.example.infrastructure.persistence.jpa.model.TestCaseEntity;
 
 public class TestCaseMapper {
@@ -14,5 +11,14 @@ public class TestCaseMapper {
                 new Input(entity.getInput(),validator),
                 new Output(entity.getExpectedOutput(), validator)
         );
+    }
+
+    public static TestCaseEntity map(TestCase testCase, TaskEntity task) {
+        return TestCaseEntity.builder()
+                .id(testCase.testCaseId().value())
+                .task(task)
+                .input(testCase.input().getInput())
+                .expectedOutput(testCase.expectedOutput().value())
+                .build();
     }
 }

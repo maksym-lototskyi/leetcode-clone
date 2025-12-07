@@ -7,10 +7,8 @@ import org.example.application.task.use_cases.run.AdditionalClassDto;
 import org.example.application.task.use_cases.submit.TestCaseEvaluator;
 import org.example.domain.model.class_definition.ClassDefinition;
 import org.example.domain.model.language.Language;
-import org.example.domain.model.task.Task;
-import org.example.domain.model.task.WorkingSolution;
-import org.example.domain.model.task.WorkingSolutionNotValidException;
-import org.example.domain.model.task.WorkingSolutionValidator;
+import org.example.domain.model.submission.*;
+import org.example.domain.model.task.*;
 
 import java.util.List;
 
@@ -26,7 +24,7 @@ public class WorkingSolutionValidatorImpl implements WorkingSolutionValidator {
     }
 
     @Override
-    public void validate(Task task, WorkingSolution workingSolution) {
+    public void validate(DraftTask task, WorkingSolution workingSolution) {
         List<ClassDefinition> definitions = classDefinitionRepository.findAllByIds(task.getRelatedClassDefinitions());
         List<AdditionalClassDto> additionalClasses = definitions.stream()
                 .map(cd -> new AdditionalClassDto(cd.className(), cd.getImplementationFor(workingSolution.languageId())
@@ -37,7 +35,10 @@ public class WorkingSolutionValidatorImpl implements WorkingSolutionValidator {
 
         Language language = languageRepository.findById(workingSolution.languageId())
                 .orElseThrow(() -> new NotFoundException("Language not found: " + workingSolution.languageId()));
-        var results = testCaseEvaluator.evaluateTestCases(task, language, additionalClasses, workingSolution.sourceCode());
-        throw new WorkingSolutionNotValidException(results.failingTestCase().testCaseId(), results.status());
+        SubmissionResult result = testCaseEvaluator.evaluateTestCases(task, language, additionalClasses, workingSolution.sourceCode());
+        switch (result){
+            case AcceptedResult ignored -> {}
+            case FailedSubmissionResult failedResult -> throw new WorkingSolutionNotValidException(failedResult);
+        }
     }
 }

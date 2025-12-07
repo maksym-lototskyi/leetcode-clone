@@ -66,8 +66,8 @@ public class TaskUseCaseConfig {
     }
 
     @Bean
-    public PublishTaskInputBoundary publishTaskInputBoundary(TaskRepository taskRepository) {
-        return PublishTaskInputBoundaryFactory.create(taskRepository);
+    public PublishTaskInputBoundary publishTaskInputBoundary(TaskRepository taskRepository, WorkingSolutionValidator validator) {
+        return PublishTaskInputBoundaryFactory.create(taskRepository,validator);
     }
 
     @Bean

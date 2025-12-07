@@ -5,6 +5,7 @@ import org.example.domain.model.class_definition.ClassDefinitionId;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface ClassDefinitionRepository {
     List<ClassDefinition> getAllByNames(Iterable<String> names);
@@ -12,4 +13,6 @@ public interface ClassDefinitionRepository {
     List<ClassDefinitionId> findIdsByNames(Iterable<String> names);
 
     List<ClassDefinition> findAllByIds(Collection<ClassDefinitionId> relatedClassDefinitions);
+
+    Optional<ClassDefinition> findById(ClassDefinitionId classDefinitionId);
 }

@@ -1,8 +1,9 @@
 package org.example.domain.model.submission;
 
+import org.example.domain.model.task.TestCaseId;
 import org.example.domain.validation.ValidationUtils;
 
-public record MemoryLimitExceededResult(TestRun failingTestCase, int testCasesPassed, int totalTestCases) implements SubmissionResult {
+public record MemoryLimitExceededResult(TestRun failingTestCase, int testCasesPassed, int totalTestCases) implements  FailedSubmissionResult {
     public MemoryLimitExceededResult {
         ValidationUtils.requireNonNull(failingTestCase, "failingTestCase cannot be null");
         ValidationUtils.requirePositiveNumber(totalTestCases, "totalTestCases must be positive");
@@ -13,5 +14,10 @@ public record MemoryLimitExceededResult(TestRun failingTestCase, int testCasesPa
     @Override
     public SubmissionResultStatus status() {
         return SubmissionResultStatus.MEMORY_LIMIT_EXCEEDED;
+    }
+
+    @Override
+    public TestCaseId failingTestCaseId() {
+        return failingTestCase.testCaseId();
     }
 }

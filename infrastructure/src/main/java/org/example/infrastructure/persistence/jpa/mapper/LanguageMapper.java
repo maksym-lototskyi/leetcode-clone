@@ -1,6 +1,5 @@
 package org.example.infrastructure.persistence.jpa.mapper;
 
-import org.example.domain.language.*;
 import org.example.domain.model.language.*;
 import org.example.infrastructure.persistence.jpa.model.LanguageEntity;
 

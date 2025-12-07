@@ -2,13 +2,11 @@ package org.example.infrastructure.persistence.jpa.repository;
 
 import org.example.application.exception.NotFoundException;
 import org.example.application.task.ports.out.TaskRepository;
-import org.example.domain.model.task.Task;
-import org.example.domain.model.task.TaskId;
-import org.example.domain.model.task.TaskSummary;
-import org.example.domain.model.task.IOValidator;
+import org.example.domain.model.task.*;
 import org.example.domain.model.topic.TopicId;
 import org.example.infrastructure.persistence.jpa.mapper.TaskMapper;
 import org.example.infrastructure.persistence.jpa.mapper.WorkingSolutionMapper;
+import org.example.infrastructure.persistence.jpa.model.DraftTaskEntity;
 import org.example.infrastructure.persistence.jpa.model.LanguageEntity;
 import org.example.infrastructure.persistence.jpa.model.TopicEntity;
 import org.example.infrastructure.persistence.jpa.model.WorkingSolutionEntity;
@@ -21,32 +19,38 @@ import java.util.Optional;
 @Repository
 class JpaTaskRepository implements TaskRepository {
     private final JpaTaskEntityRepository jpaTaskEntityRepository;
-    private final JpaTopicEntityRepository jpaTopicEntityRepository;
-    private final JpaLanguageEntityRepository jpaLanguageEntityRepository;
-    private final IOValidator validator;
+    private final JpaDraftTaskEntityRepository jpaDraftTaskEntityRepository;
+    private final JpaPublishedTaskEntityRepository jpaPublishedTaskEntityRepository;
+    private final TaskMapper mapper;
 
-    public JpaTaskRepository(JpaTaskEntityRepository jpaTaskEntityRepository, JpaTopicEntityRepository jpaTopicEntityRepository, JpaLanguageEntityRepository jpaLanguageEntityRepository, IOValidator validator) {
+    public JpaTaskRepository(JpaTaskEntityRepository jpaTaskEntityRepository, JpaDraftTaskEntityRepository jpaDraftTaskEntityRepository, JpaPublishedTaskEntityRepository jpaPublishedTaskEntityRepository, TaskMapper mapper) {
         this.jpaTaskEntityRepository = jpaTaskEntityRepository;
-        this.jpaTopicEntityRepository = jpaTopicEntityRepository;
-        this.jpaLanguageEntityRepository = jpaLanguageEntityRepository;
-        this.validator = validator;
+        this.jpaDraftTaskEntityRepository = jpaDraftTaskEntityRepository;
+        this.jpaPublishedTaskEntityRepository = jpaPublishedTaskEntityRepository;
+        this.mapper = mapper;
     }
 
     @Override
     public Optional<Task> loadTaskDefinition(TaskId taskId) {
         return jpaTaskEntityRepository.findById(taskId.value())
-                .map(t -> TaskMapper.map(t, validator));
+                .map(mapper::toDomain);
     }
 
     @Override
-    public Optional<Task> loadTaskForRuntime(TaskId taskId) {
-        return jpaTaskEntityRepository.findTaskForRuntimeByTaskId(taskId.value())
-                .map(t -> TaskMapper.map(t, validator));
+    public Optional<DraftTask> findDraftById(TaskId taskId) {
+        return jpaDraftTaskEntityRepository.findById(taskId.value())
+                .map(entity -> (DraftTask) mapper.toDomain(entity));
+    }
+
+    @Override
+    public Optional<PublishedTask> findPublishedTaskById(TaskId taskId) {
+        return jpaPublishedTaskEntityRepository.findById(taskId.value())
+                .map(entity -> (PublishedTask) mapper.toDomain(entity));
     }
 
 
     @Override
-    public List<TaskSummary> findTaskSummaries(int pageNumber, int pageSize) {
+    public List<TaskSummary> findPublishedTaskPage(int pageNumber, int pageSize) {
         return jpaTaskEntityRepository.findAllSummaries(Pageable.ofSize(pageSize).withPage(pageNumber)).toList();
     }
 
@@ -58,15 +62,6 @@ class JpaTaskRepository implements TaskRepository {
     @Override
     @Transactional
     public void save(Task task) {
-        List<TopicEntity> topics = jpaTopicEntityRepository.findAllById(task.getTopics().stream().map(TopicId::value).toList());
-
-        WorkingSolutionEntity workingSolution = null;
-        if(task.getWorkingSolution() != null){
-            LanguageEntity language = jpaLanguageEntityRepository.findById(task.getWorkingSolution().languageId().value())
-                    .orElseThrow(() -> new NotFoundException("Language not found with id: " + task.getWorkingSolution().languageId().value()));
-
-            workingSolution = WorkingSolutionMapper.map(task.getWorkingSolution(), language);
-        }
-        jpaTaskEntityRepository.save(TaskMapper.map(task, topics, workingSolution));
+        jpaTaskEntityRepository.save(mapper.toEntity(task));
     }
 }

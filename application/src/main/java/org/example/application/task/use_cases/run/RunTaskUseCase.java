@@ -7,10 +7,9 @@ import org.example.application.task.ports.out.TaskRepository;
 import org.example.domain.model.class_definition.ClassDefinition;
 import org.example.domain.model.language.Language;
 import org.example.domain.model.submission.SubmissionResultStatus;
-import org.example.domain.model.task.Task;
+import org.example.domain.model.task.PublishedTask;
 import org.example.domain.model.task.TaskId;
 import org.example.domain.model.task.WorkingSolution;
-import org.example.domain.task.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,7 +33,7 @@ class RunTaskUseCase implements RunTaskInputBoundary {
 
     @Override
     public TaskRunResult execute(RunTaskCommand command) throws IOException {
-        Task task = taskRepository.loadTaskDefinition(new TaskId(command.taskId()))
+        PublishedTask task = taskRepository.findPublishedTaskById(new TaskId(command.taskId()))
                 .orElseThrow(() -> new NotFoundException("Task not found with id: " + command.taskId()));
         WorkingSolution taskWorkingSolution = task.getWorkingSolution();
 

@@ -13,6 +13,6 @@ class GetTaskPageUseCase implements GetTaskPageInputBoundary {
     }
 
     public List<TaskSummary> execute(int pageNumber, int pageSize) {
-        return taskRepository.findTaskSummaries(pageNumber, pageSize);
+        return taskRepository.findPublishedTaskPage(pageNumber, pageSize);
     }
 }

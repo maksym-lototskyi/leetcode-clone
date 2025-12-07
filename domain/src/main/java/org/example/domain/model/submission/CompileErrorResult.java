@@ -1,11 +1,12 @@
 package org.example.domain.model.submission;
 
+import org.example.domain.model.task.TestCaseId;
 import org.example.domain.validation.ValidationUtils;
 
 public record CompileErrorResult(TestRun failingTestCase,
                                  String compileErrorMessage,
                                  int testCasesPassed,
-                                 int totalTestCases) implements SubmissionResult{
+                                 int totalTestCases) implements FailedSubmissionResult {
     public CompileErrorResult {
         ValidationUtils.requireNonNull(failingTestCase, "failingTestCase cannot be null");
         ValidationUtils.requireNonBlank(compileErrorMessage, "compileErrorMessage cannot be null or blank");
@@ -17,5 +18,10 @@ public record CompileErrorResult(TestRun failingTestCase,
     @Override
     public SubmissionResultStatus status() {
         return SubmissionResultStatus.COMPILE_ERROR;
+    }
+
+    @Override
+    public TestCaseId failingTestCaseId() {
+        return failingTestCase.testCaseId();
     }
 }

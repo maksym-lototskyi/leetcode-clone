@@ -1,5 +1,7 @@
 package org.example.domain.model.submission;
 
+import org.example.domain.model.task.DraftTask;
+import org.example.domain.model.task.Task;
 import org.example.domain.validation.ValidationUtils;
 
 public record AcceptedResult(Long runtimeInMs,

@@ -1,8 +1,9 @@
 package org.example.domain.model.submission;
 
+import org.example.domain.model.task.TestCaseId;
 import org.example.domain.validation.ValidationUtils;
 
-public record TimeLimitExceededResult(TestRun failingTestCase, int testCasesPassed, int totalTestCases) implements SubmissionResult {
+public record TimeLimitExceededResult(TestRun failingTestCase, int testCasesPassed, int totalTestCases) implements FailedSubmissionResult {
     public TimeLimitExceededResult {
         ValidationUtils.requireNonNull(failingTestCase, "failingTestCase cannot be null");
         ValidationUtils.requirePositiveNumber(totalTestCases, "totalTestCases must be positive");
@@ -13,5 +14,10 @@ public record TimeLimitExceededResult(TestRun failingTestCase, int testCasesPass
     @Override
     public SubmissionResultStatus status() {
         return SubmissionResultStatus.TIME_LIMIT_EXCEEDED;
+    }
+
+    @Override
+    public TestCaseId failingTestCaseId() {
+        return failingTestCase.testCaseId();
     }
 }

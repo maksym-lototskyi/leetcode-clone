@@ -1,8 +1,9 @@
 package org.example.domain.model.submission;
 
+import org.example.domain.model.task.TestCaseId;
 import org.example.domain.validation.ValidationUtils;
 
-public record WrongAnswerResult (TestRun failingTestCase, int testCasesPassed, int totalTestCases) implements SubmissionResult{
+public record WrongAnswerResult (TestRun failingTestCase, int testCasesPassed, int totalTestCases) implements FailedSubmissionResult {
     public WrongAnswerResult {
         ValidationUtils.requireNonNull(failingTestCase, "failingTestCase cannot be null");
         ValidationUtils.requirePositiveNumber(totalTestCases, "totalTestCases must be positive");
@@ -13,5 +14,10 @@ public record WrongAnswerResult (TestRun failingTestCase, int testCasesPassed, i
     @Override
     public SubmissionResultStatus status() {
         return SubmissionResultStatus.WRONG_ANSWER;
+    }
+
+    @Override
+    public TestCaseId failingTestCaseId() {
+        return failingTestCase.testCaseId();
     }
 }

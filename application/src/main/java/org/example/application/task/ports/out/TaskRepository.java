@@ -1,16 +1,16 @@
 package org.example.application.task.ports.out;
 
-import org.example.domain.model.task.Task;
-import org.example.domain.model.task.TaskId;
-import org.example.domain.model.task.TaskSummary;
+import org.example.domain.model.task.*;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface TaskRepository {
     Optional<Task> loadTaskDefinition(TaskId taskId);
-    Optional<Task> loadTaskForRuntime(TaskId taskId);
-    List<TaskSummary> findTaskSummaries(int pageNumber, int pageSize);
+
+    Optional<DraftTask> findDraftById(TaskId taskId);
+    Optional<PublishedTask> findPublishedTaskById(TaskId taskId);
+    List<TaskSummary> findPublishedTaskPage(int pageNumber, int pageSize);
     void save(Task task);
     boolean existsById(TaskId taskId);
 }

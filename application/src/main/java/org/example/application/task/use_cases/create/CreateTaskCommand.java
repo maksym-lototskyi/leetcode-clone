@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public record CreateTaskCommand(
+        UUID createdByUserId,
         String title,
         String functionName,
         String returnType,

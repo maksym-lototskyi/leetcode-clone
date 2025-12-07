@@ -4,10 +4,7 @@ import org.example.application.exception.NotFoundException;
 import org.example.application.language.ports.out.LanguageRepository;
 import org.example.application.task.ports.out.TaskRepository;
 import org.example.domain.model.language.Language;
-import org.example.domain.model.task.Task;
-import org.example.domain.model.task.TaskId;
-import org.example.domain.model.task.WorkingSolution;
-import org.example.domain.model.task.WorkingSolutionValidator;
+import org.example.domain.model.task.*;
 
 class AddWorkingSolutionUseCase implements AddWorkingSolutionInputBoundary {
     private final TaskRepository taskRepository;
@@ -20,8 +17,8 @@ class AddWorkingSolutionUseCase implements AddWorkingSolutionInputBoundary {
     }
 
     public void execute(AddWorkingSolutionCommand command){
-        Task task = taskRepository.loadTaskForRuntime(TaskId.of(command.taskId()))
-                .orElseThrow(() -> new NotFoundException("Task not found with id: " + command.taskId()));
+        DraftTask task = taskRepository.findDraftById(TaskId.of(command.taskId()))
+                .orElseThrow(() -> new NotFoundException("Draft task not found with id: " + command.taskId()));
 
         Language language = repository.findByName(command.programmingLanguage())
                 .orElseThrow(() -> new NotFoundException("Language not found with name: " + command.programmingLanguage()));

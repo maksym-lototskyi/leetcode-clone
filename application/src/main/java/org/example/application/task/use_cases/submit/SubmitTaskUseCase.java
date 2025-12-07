@@ -11,6 +11,7 @@ import org.example.domain.model.class_definition.ClassDefinition;
 import org.example.domain.model.language.Language;
 import org.example.domain.model.submission.Submission;
 import org.example.domain.model.submission.SubmissionResult;
+import org.example.domain.model.task.PublishedTask;
 import org.example.domain.model.task.Task;
 import org.example.domain.model.task.TaskId;
 import org.example.domain.model.user.UserId;
@@ -37,7 +38,7 @@ class SubmitTaskUseCase implements SubmitTaskInputBoundary{
     }
 
     public void execute(SubmitTaskCommand command, UUID userId) throws IOException {
-        Task task = taskRepository.loadTaskForRuntime(TaskId.of(command.taskId()))
+        PublishedTask task = taskRepository.findPublishedTaskById(TaskId.of(command.taskId()))
                 .orElseThrow(() -> new NotFoundException("Task not found with id: " + command.taskId()));
         if(!userRepository.existsById(UserId.of(userId))){
             throw new NotFoundException("User not found with id: " + userId);

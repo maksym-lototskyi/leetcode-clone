@@ -3,7 +3,6 @@ package org.example.application.task.use_cases.add_test_case;
 import org.example.application.exception.NotFoundException;
 import org.example.application.task.ports.out.TaskRepository;
 import org.example.domain.model.task.*;
-import org.example.domain.task.*;
 import org.example.domain.model.task.IOValidator;
 
 class AddTestCaseUseCase implements AddTestCaseInputBoundary {
@@ -16,7 +15,7 @@ class AddTestCaseUseCase implements AddTestCaseInputBoundary {
     }
 
     public void execute(AddTestCaseCommand command){
-        Task task = taskRepository.loadTaskDefinition(TaskId.of(command.taskId())).orElseThrow(() -> new NotFoundException("Task not found"));
+        DraftTask task = taskRepository.findDraftById(TaskId.of(command.taskId())).orElseThrow(() -> new NotFoundException("Task not found"));
 
         task.addTestCase(TestCase.create(
                 new Input(command.input(), ioValidator),

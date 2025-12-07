@@ -5,16 +5,12 @@ import org.example.application.exception.NotFoundException;
 import org.example.application.task.ports.out.TaskRepository;
 import org.example.application.topic.ports.out.TopicRepository;
 import org.example.domain.model.class_definition.ClassDefinitionId;
-import org.example.domain.model.task.Task;
-import org.example.domain.model.task.TaskDescription;
-import org.example.domain.model.task.TaskLevel;
-import org.example.domain.model.task.TaskSignature;
+import org.example.domain.model.task.*;
 import org.example.domain.model.topic.TopicId;
+import org.example.domain.model.user.UserId;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 class CreateTaskUseCase implements CreateTaskInputBoundary{
     private final TaskRepository taskRepository;
@@ -45,12 +41,13 @@ class CreateTaskUseCase implements CreateTaskInputBoundary{
         List<ClassDefinitionId> definitionIds = classDefinitionRepository.findIdsByNames(command.classDefinitionNames());
 
         Task task = Task.draft(
+                UserId.of(command.createdByUserId()),
                 TaskSignature.of(
                         command.functionName(),
                         parameters,
                         command.returnType()
                 ),
-                command.title(),
+                TaskTitle.of(command.title()),
                 TaskDescription.of(command.description()),
                 TaskLevel.valueOf(command.taskLevel()),
                 command.topicIds().stream().map(TopicId::new).toList(),
