@@ -6,6 +6,7 @@ import org.example.domain.model.topic.TopicId;
 import org.example.infrastructure.persistence.jpa.mapper.TopicMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -17,14 +18,14 @@ public class JpaTopicRepository implements TopicRepository {
     }
 
     @Override
-    public List<Topic> findAllByIds(List<TopicId> topicIds) {
+    public List<Topic> findAllByIds(Collection<TopicId> topicIds) {
         return jpaTopicEntityRepository.findAllById(
                 topicIds.stream().map(TopicId::value).toList()
         ).stream().map(TopicMapper::map).toList();
     }
 
     @Override
-    public boolean existAllByIds(List<TopicId> topicIds) {
+    public boolean existAllByIds(Collection<TopicId> topicIds) {
         return jpaTopicEntityRepository.existAllByIds(
                 topicIds.stream().map(TopicId::value).toList()
         );

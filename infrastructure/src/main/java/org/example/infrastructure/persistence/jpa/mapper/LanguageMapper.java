@@ -7,7 +7,7 @@ public class LanguageMapper {
     public static Language map(LanguageEntity languageEntity) {
         return new Language(
                 LanguageId.of(languageEntity.getId()),
-                LanguageName.of(languageEntity.getName()),
+                languageEntity.getName(),
                 new Version(languageEntity.getVersion()),
                 FileExtension.of(languageEntity.getFileExtension())
         );
@@ -17,7 +17,7 @@ public class LanguageMapper {
         return LanguageEntity.builder()
                 .id(language.getId().value())
                 .version(language.getVersion().value())
-                .name(language.getName().value())
+                .name(language.getName())
                 .fileExtension(language.getFileExtension().value())
                 .build();
     }

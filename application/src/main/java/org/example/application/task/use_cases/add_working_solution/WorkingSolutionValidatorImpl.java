@@ -27,8 +27,8 @@ public class WorkingSolutionValidatorImpl implements WorkingSolutionValidator {
     public void validate(DraftTask task, WorkingSolution workingSolution) {
         List<ClassDefinition> definitions = classDefinitionRepository.findAllByIds(task.getRelatedClassDefinitions());
         List<AdditionalClassDto> additionalClasses = definitions.stream()
-                .map(cd -> new AdditionalClassDto(cd.className(), cd.getImplementationFor(workingSolution.languageId())
-                        .orElseThrow(() -> new NotFoundException("Implementation for class " + cd.className()))
+                .map(cd -> new AdditionalClassDto(cd.getClassName().value(), cd.getImplementationFor(workingSolution.languageId())
+                        .orElseThrow(() -> new NotFoundException("Implementation for class " + cd.getClassName().value()))
                         .sourceCode()
                 ))
                 .toList();

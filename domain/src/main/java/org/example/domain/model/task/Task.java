@@ -15,11 +15,11 @@ public abstract sealed class Task permits DraftTask, PublishedTask {
     private TaskDescription taskDescription;
     private TaskLevel taskLevel;
     private final UserId createdBy;
-    private final Set<TopicId> topics;
+    private final Set<TopicId> topicIds;
     private final Set<Constraint> constraints;
 
 
-    Task(TaskId taskId, UserId createdBy, TaskSignature taskSignature, TaskTitle title, TaskDescription taskDescription, TaskLevel taskLevel, Collection<TopicId> topics, Collection<Constraint> constraints) {
+    Task(TaskId taskId, UserId createdBy, TaskSignature taskSignature, TaskTitle title, TaskDescription taskDescription, TaskLevel taskLevel, Collection<TopicId> topicIds, Collection<Constraint> constraints) {
         this.taskId = ValidationUtils.requireNonNull(taskId, "Task ID cannot be null");
         this.taskDescription = ValidationUtils.requireNonNull(taskDescription, "Task description cannot be null");
         this.taskLevel = ValidationUtils.requireNonNull(taskLevel, "Task level cannot be null");
@@ -27,7 +27,7 @@ public abstract sealed class Task permits DraftTask, PublishedTask {
         this.title = ValidationUtils.requireNonNull(title, "Task title cannot be null");
         this.createdBy = ValidationUtils.requireNonNull(createdBy, "CreatedBy user ID cannot be null");
         this.constraints = (Set<Constraint>) ValidationUtils.requireNonEmptyCollection(constraints, "Task must have at least one constraint");
-        this.topics = new HashSet<>(topics != null ? topics : new HashSet<>());
+        this.topicIds = new HashSet<>(topicIds != null ? topicIds : new HashSet<>());
     }
 
     public static Task draft(UserId createdBy, TaskSignature taskSignature, TaskTitle title, TaskDescription taskDescription, TaskLevel taskLevel, Collection<TopicId> topics, Collection<Constraint> constraints, Collection<ClassDefinitionId> relatedClassDefinitions, long timeLimitMs, long memoryLimitKb) {
@@ -45,8 +45,8 @@ public abstract sealed class Task permits DraftTask, PublishedTask {
     public Set<Constraint> getConstraints() {
         return Set.copyOf(constraints);
     }
-    public Set<TopicId> getTopics() {
-        return Set.copyOf(topics);
+    public Set<TopicId> getTopicIds() {
+        return Set.copyOf(topicIds);
     }
     public abstract Set<Example> getExamples();
     public abstract Set<TestCase> getTestCases();

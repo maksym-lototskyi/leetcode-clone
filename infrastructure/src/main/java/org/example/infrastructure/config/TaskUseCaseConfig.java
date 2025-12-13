@@ -10,8 +10,11 @@ import org.example.application.task.use_cases.add_test_case.AddTestCaseInputBoun
 import org.example.application.task.use_cases.add_working_solution.AddWorkingSolutionInputBoundary;
 import org.example.application.task.use_cases.add_working_solution.AddWorkingSolutionInputBoundaryFactory;
 import org.example.application.task.use_cases.add_working_solution.WorkingSolutionValidatorImpl;
-import org.example.application.task.use_cases.create.CreateTaskInputBoundary;
-import org.example.application.task.use_cases.create.CreateTaskInputBoundaryFactory;
+import org.example.application.task.use_cases.create_draft.CreateDraftTaskInputBoundary;
+import org.example.application.task.use_cases.create_draft.CreateDraftTaskInputBoundaryFactory;
+import org.example.application.task.use_cases.get_task_definition.GetTaskDefinitionInputBoundary;
+import org.example.application.task.use_cases.get_task_definition.GetTaskDefinitionInputBoundaryFactory;
+import org.example.application.task.use_cases.get_task_definition.StarterCodeGenerator;
 import org.example.application.task.use_cases.publish.PublishTaskInputBoundary;
 import org.example.application.task.use_cases.publish.PublishTaskInputBoundaryFactory;
 import org.example.application.task.use_cases.run.ObjectConverter;
@@ -39,8 +42,8 @@ public class TaskUseCaseConfig {
     }
 
     @Bean
-    public CreateTaskInputBoundary createTaskInputBoundary(TaskRepository taskRepository, TopicRepository topicRepository, ClassDefinitionRepository classDefinitionRepository) {
-        return CreateTaskInputBoundaryFactory.create(
+    public CreateDraftTaskInputBoundary createTaskInputBoundary(TaskRepository taskRepository, TopicRepository topicRepository, ClassDefinitionRepository classDefinitionRepository) {
+        return CreateDraftTaskInputBoundaryFactory.create(
                 taskRepository,
                 topicRepository,
                 classDefinitionRepository
@@ -68,6 +71,16 @@ public class TaskUseCaseConfig {
     @Bean
     public PublishTaskInputBoundary publishTaskInputBoundary(TaskRepository taskRepository, WorkingSolutionValidator validator) {
         return PublishTaskInputBoundaryFactory.create(taskRepository,validator);
+    }
+
+    @Bean
+    public GetTaskDefinitionInputBoundary getTaskDefinitionInputBoundary(TaskRepository taskRepository, TopicRepository topicRepository, LanguageRepository languageRepository, StarterCodeGenerator starterCodeGenerator) {
+        return GetTaskDefinitionInputBoundaryFactory.create(
+                taskRepository,
+                topicRepository,
+                languageRepository,
+                starterCodeGenerator
+        );
     }
 
     @Bean

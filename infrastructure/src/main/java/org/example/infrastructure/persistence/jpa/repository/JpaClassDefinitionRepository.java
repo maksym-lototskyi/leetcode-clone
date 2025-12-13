@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JpaClassDefinitionRepository implements ClassDefinitionRepository {
@@ -37,5 +38,10 @@ public class JpaClassDefinitionRepository implements ClassDefinitionRepository {
     public List<ClassDefinition> findAllByIds(Collection<ClassDefinitionId> relatedClassDefinitions) {
         List<ClassDefinitionEntity> definitionEntities =  jpaRepository.findAllById(relatedClassDefinitions.stream().map(ClassDefinitionId::id).toList());
         return definitionEntities.stream().map(ClassDefinitionMapper::map).toList();
+    }
+
+    @Override
+    public Optional<ClassDefinition> findById(ClassDefinitionId classDefinitionId) {
+        return jpaRepository.findById(classDefinitionId.id()).map(ClassDefinitionMapper::map);
     }
 }

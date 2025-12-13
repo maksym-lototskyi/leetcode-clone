@@ -19,7 +19,7 @@ class CreateLanguageUseCase implements CreateLanguageInputBoundary {
         if(languageRepository.existsByName(command.name())){
             throw new LanguageAlreadyExistsException("Language already exists with name: " + command.name());
         }
-        var language = Language.create(LanguageName.of(command.name()), Version.of(command.version()), FileExtension.of(command.extension()));
+        var language = Language.create(command.name(), Version.of(command.version()), FileExtension.of(command.extension()));
         languageRepository.save(language);
         return language.getId().value();
     }

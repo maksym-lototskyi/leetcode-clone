@@ -1,4 +1,4 @@
-package org.example.infrastructure.adapters;
+package org.example.infrastructure.adapters.io_validator.json;
 
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;

@@ -17,7 +17,7 @@ public class TestCaseMapper {
         return TestCaseEntity.builder()
                 .id(testCase.testCaseId().value())
                 .task(task)
-                .input(testCase.input().getInput())
+                .input(testCase.input().value())
                 .expectedOutput(testCase.expectedOutput().value())
                 .build();
     }

@@ -1,20 +1,23 @@
-package org.example.domain.model.comment;
+package org.example.domain.model.task_comment;
 
 import lombok.Getter;
 import org.example.domain.model.user.UserId;
+import org.example.domain.validation.ValidationUtils;
 
 import java.util.*;
 
-@Getter
-public final class Comment {
-    private final CommentId commentId;
+public final class TaskComment {
+    @Getter
+    private final TaskCommentId commentId;
+    @Getter
     private CommentContent commentContent;
+    @Getter
     private final UserId author;
     private final Set<UserId> likedBy = new HashSet<>();
-    private final List<Comment> replies = new ArrayList<>();
+    private final List<TaskComment> replies = new ArrayList<>();
 
-    public Comment(CommentContent commentContent, UserId author,
-                   Collection<UserId> likedBy, Collection<Comment> replies) {
+    public TaskComment(CommentContent commentContent, UserId author,
+                       Collection<UserId> likedBy, Collection<TaskComment> replies) {
         if (commentContent == null) {
             throw new IllegalArgumentException("Comment content cannot be null");
         }
@@ -22,7 +25,7 @@ public final class Comment {
             throw new IllegalArgumentException("Author cannot be null");
         }
 
-        this.commentId = CommentId.generate();
+        this.commentId = TaskCommentId.generate();
         this.commentContent = commentContent;
         this.author = author;
 
@@ -35,35 +38,35 @@ public final class Comment {
     }
 
     public void like(UserId userId) {
-        if (userId == null) throw new IllegalArgumentException("User ID cannot be null");
+        ValidationUtils.requireNonNull(userId, "User ID cannot be null");
         likedBy.add(userId);
     }
 
     public void unlike(UserId userId) {
-        if (userId == null) throw new IllegalArgumentException("User ID cannot be null");
+        ValidationUtils.requireNonNull(userId, "User ID cannot be null");
         likedBy.remove(userId);
     }
 
-    public void reply(Comment reply) {
-        if (reply == null) throw new IllegalArgumentException("Reply cannot be null");
+    public void reply(TaskComment reply) {
+        ValidationUtils.requireNonNull(reply, "Reply cannot be null");
         replies.add(reply);
     }
 
-    public void removeReply(Comment reply) {
+    public void removeReply(TaskComment reply) {
         replies.remove(reply);
     }
 
     public void editContent(CommentContent newContent) {
-        if (newContent == null) throw new IllegalArgumentException("Content cannot be null");
+        ValidationUtils.requireNonNull(newContent, "New content cannot be null");
         this.commentContent = newContent;
     }
 
-    public List<Comment> getReplies() {
-        return new ArrayList<>(replies);
+    public List<TaskComment> replies() {
+        return List.copyOf(replies);
     }
 
-    public Set<UserId> getLikedBy() {
-        return new HashSet<>(likedBy);
+    public Set<UserId> likedBy() {
+        return Set.copyOf(likedBy);
     }
 }
 

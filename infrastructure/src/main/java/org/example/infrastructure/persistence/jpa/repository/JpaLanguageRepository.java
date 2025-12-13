@@ -3,9 +3,11 @@ package org.example.infrastructure.persistence.jpa.repository;
 import org.example.application.language.ports.out.LanguageRepository;
 import org.example.domain.model.language.Language;
 import org.example.domain.model.language.LanguageId;
+import org.example.domain.model.language.LanguageName;
 import org.example.infrastructure.persistence.jpa.mapper.LanguageMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -23,19 +25,27 @@ class JpaLanguageRepository implements LanguageRepository {
     }
 
     @Override
-    public Optional<Language> findByName(String name) {
+    public Optional<Language> findByName(LanguageName name) {
         return jpaLanguageEntityRepository.findByName(name)
-                .map(l -> LanguageMapper.map(l));
+                .map(LanguageMapper::map);
     }
 
     @Override
     public Optional<Language> findById(LanguageId id) {
         return jpaLanguageEntityRepository.findById(id.value())
-                .map(l -> LanguageMapper.map(l));
+                .map(LanguageMapper::map);
     }
 
     @Override
-    public boolean existsByName(String name) {
+    public boolean existsByName(LanguageName name) {
         return jpaLanguageEntityRepository.existsByName(name);
+    }
+
+    @Override
+    public List<Language> findAllSupportedLanguages() {
+        return jpaLanguageEntityRepository.findAll()
+                .stream()
+                .map(LanguageMapper::map)
+                .toList();
     }
 }

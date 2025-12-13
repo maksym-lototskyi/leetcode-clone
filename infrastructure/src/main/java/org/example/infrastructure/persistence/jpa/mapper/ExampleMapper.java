@@ -18,7 +18,7 @@ public class ExampleMapper {
         return ExampleEntity.builder()
                 .id(example.exampleId().value())
                 .task(task)
-                .input(example.input().getInput())
+                .input(example.input().value())
                 .output(example.output().value())
                 .explanation(example.explanation())
                 .build();

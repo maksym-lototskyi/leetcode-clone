@@ -47,7 +47,7 @@ public final class DraftTask extends Task{
                 this.getTitle(),
                 this.getTaskDescription(),
                 this.getTaskLevel(),
-                Set.copyOf(this.getTopics()),
+                Set.copyOf(this.getTopicIds()),
                 Set.copyOf(this.getConstraints()),
                 Set.copyOf(this.getExamples()),
                 Set.copyOf(this.getTestCases()),

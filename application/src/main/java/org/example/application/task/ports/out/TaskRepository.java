@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TaskRepository {
-    Optional<Task> loadTaskDefinition(TaskId taskId);
+    Optional<PublishedTask> findPublishedTaskDefinition(TaskId taskId);
 
     Optional<DraftTask> findDraftById(TaskId taskId);
     Optional<PublishedTask> findPublishedTaskById(TaskId taskId);

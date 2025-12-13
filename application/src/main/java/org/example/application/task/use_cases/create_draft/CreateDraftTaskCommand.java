@@ -1,9 +1,9 @@
-package org.example.application.task.use_cases.create;
+package org.example.application.task.use_cases.create_draft;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public record CreateTaskCommand(
+public record CreateDraftTaskCommand(
         UUID createdByUserId,
         String title,
         String functionName,

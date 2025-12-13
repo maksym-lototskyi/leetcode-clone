@@ -5,6 +5,8 @@ import org.example.domain.validation.ValidationUtils;
 
 @Getter
 public final class Language {
+    public static final LanguageName DEFAULT = LanguageName.JAVA;
+
     private final LanguageId id;
     private final LanguageName name;
     private Version version;

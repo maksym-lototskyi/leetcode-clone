@@ -6,10 +6,12 @@ import org.example.application.task.use_cases.add_test_case.AddTestCaseCommand;
 import org.example.application.task.use_cases.add_test_case.AddTestCaseInputBoundary;
 import org.example.application.task.use_cases.add_working_solution.AddWorkingSolutionCommand;
 import org.example.application.task.use_cases.add_working_solution.AddWorkingSolutionInputBoundary;
-import org.example.application.task.use_cases.create.CreateTaskCommand;
-import org.example.application.task.use_cases.create.CreateTaskInputBoundary;
+import org.example.application.task.use_cases.create_draft.CreateDraftTaskCommand;
+import org.example.application.task.use_cases.create_draft.CreateDraftTaskInputBoundary;
+import org.example.application.task.use_cases.get_task_definition.GetTaskDefinitionInputBoundary;
+import org.example.application.task.use_cases.get_task_definition.GetTaskDefinitionRequest;
+import org.example.application.task.use_cases.get_task_definition.TaskDetailsDto;
 import org.example.application.task.use_cases.publish.PublishTaskInputBoundary;
-import org.example.application.task.use_cases.run.ObjectConverter;
 import org.example.application.task.use_cases.run.RunTaskCommand;
 import org.example.application.task.use_cases.run.RunTaskInputBoundary;
 import org.example.application.task.use_cases.run.TaskRunResult;
@@ -19,25 +21,28 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
     private final RunTaskInputBoundary runTaskUseCase;
-    private final CreateTaskInputBoundary createTaskInputBoundary;
+    private final CreateDraftTaskInputBoundary createDraftTaskInputBoundary;
     private final AddTestCaseInputBoundary addTestCaseInputBoundary;
     private final AddExampleInputBoundary addExampleInputBoundary;
     private final AddWorkingSolutionInputBoundary addWorkingSolutionInputBoundary;
     private final PublishTaskInputBoundary publishTaskInputBoundary;
+    private final GetTaskDefinitionInputBoundary getTaskDefinitionInputBoundary;
 
-    public TaskController(RunTaskInputBoundary runTaskUseCase, CreateTaskInputBoundary createTaskInputBoundary, AddTestCaseInputBoundary addTestCaseInputBoundary, AddExampleInputBoundary addExampleInputBoundary, AddWorkingSolutionInputBoundary addWorkingSolutionInputBoundary, PublishTaskInputBoundary publishTaskInputBoundary) {
+    public TaskController(RunTaskInputBoundary runTaskUseCase, CreateDraftTaskInputBoundary createDraftTaskInputBoundary, AddTestCaseInputBoundary addTestCaseInputBoundary, AddExampleInputBoundary addExampleInputBoundary, AddWorkingSolutionInputBoundary addWorkingSolutionInputBoundary, PublishTaskInputBoundary publishTaskInputBoundary, GetTaskDefinitionInputBoundary getTaskDefinitionInputBoundary) {
         this.runTaskUseCase = runTaskUseCase;
-        this.createTaskInputBoundary = createTaskInputBoundary;
+        this.createDraftTaskInputBoundary = createDraftTaskInputBoundary;
         this.addTestCaseInputBoundary = addTestCaseInputBoundary;
         this.addExampleInputBoundary = addExampleInputBoundary;
         this.addWorkingSolutionInputBoundary = addWorkingSolutionInputBoundary;
         this.publishTaskInputBoundary = publishTaskInputBoundary;
+        this.getTaskDefinitionInputBoundary = getTaskDefinitionInputBoundary;
     }
 
     @PostMapping("/run")
@@ -50,9 +55,9 @@ public class TaskController {
         }
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<String> createTask(@RequestBody CreateTaskCommand command){
-        UUID id = createTaskInputBoundary.execute(command);
+    @PostMapping("/draft")
+    public ResponseEntity<String> createDraft(@RequestBody CreateDraftTaskCommand command){
+        UUID id = createDraftTaskInputBoundary.execute(command);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequestUri()
                 .path("/{id}")
@@ -83,6 +88,14 @@ public class TaskController {
     public ResponseEntity<String> publishTask(@PathVariable UUID id) {
         publishTaskInputBoundary.execute(id);
         return ResponseEntity.ok("Task published successfully");
+    }
+
+    @GetMapping("/{id}/definition")
+    public ResponseEntity<TaskDetailsDto> getTaskDefinition(@PathVariable UUID id, @RequestParam(required = false) String languageName) {
+        var request = new GetTaskDefinitionRequest(id, Optional.ofNullable(languageName));
+
+        TaskDetailsDto taskDetails = getTaskDefinitionInputBoundary.execute(request);
+        return ResponseEntity.ok(taskDetails);
     }
 
 }

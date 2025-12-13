@@ -3,7 +3,6 @@ package org.example.infrastructure.persistence.jpa.mapper;
 import org.example.application.class_definition.ports.out.ClassDefinitionRepository;
 import org.example.application.topic.ports.out.TopicRepository;
 import org.example.domain.model.class_definition.ClassDefinitionId;
-import org.example.domain.model.language.LanguageId;
 import org.example.domain.model.task.*;
 import org.example.domain.model.task.IOValidator;
 import org.example.domain.model.topic.TopicId;
@@ -11,7 +10,6 @@ import org.example.domain.model.user.UserId;
 import org.example.infrastructure.persistence.jpa.model.*;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -136,7 +134,7 @@ public class TaskMapper{
         taskEntity.setTimeLimitMs(domainTask.getTimeLimitMs());
         taskEntity.setMemoryLimitKb(domainTask.getMemoryLimitKb());
 
-        Set<TopicEntity> topicEntities = topicRepository.findAllByIds(domainTask.getTopics().stream().toList())
+        Set<TopicEntity> topicEntities = topicRepository.findAllByIds(domainTask.getTopicIds().stream().toList())
                 .stream().map(TopicMapper::map).collect(Collectors.toSet());
 
         taskEntity.setTopics(topicEntities);

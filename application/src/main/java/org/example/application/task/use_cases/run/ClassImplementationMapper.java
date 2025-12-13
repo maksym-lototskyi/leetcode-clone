@@ -11,8 +11,8 @@ public class ClassImplementationMapper {
     public static List<AdditionalClassDto> convertToAdditionalClassDtos(List<ClassDefinition> definitions, LanguageId languageId){
         List<AdditionalClassDto> dtos = new ArrayList<>();
         for(var def : definitions){
-            dtos.add(new AdditionalClassDto(def.className(), def.getImplementationFor(languageId).orElseThrow(() ->
-                    new NotFoundException("Class definition not found for class definition "+ def.className() + " and language id: " + languageId)
+            dtos.add(new AdditionalClassDto(def.getClassName().value(), def.getImplementationFor(languageId).orElseThrow(() ->
+                    new NotFoundException("Class definition not found for class definition "+ def.getClassName().value() + " and language id: " + languageId)
             ).sourceCode()));
         }
         return dtos;

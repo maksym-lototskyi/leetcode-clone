@@ -2,6 +2,7 @@ package org.example.infrastructure.persistence.jpa.mapper;
 
 import org.example.domain.model.class_definition.ClassDefinition;
 import org.example.domain.model.class_definition.ClassDefinitionId;
+import org.example.domain.model.class_definition.ClassName;
 import org.example.infrastructure.persistence.jpa.model.ClassDefinitionEntity;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +19,7 @@ public class ClassDefinitionMapper {
     public static ClassDefinition map(ClassDefinitionEntity entity){
         return new ClassDefinition(
                 ClassDefinitionId.of(entity.getId()),
-                entity.getName(),
+                ClassName.of(entity.getName()),
                 entity.getImplementations().stream()
                         .map(implEntity -> ClassImplementationMapper.map(implEntity))
                         .collect(Collectors.toSet())
@@ -27,8 +28,8 @@ public class ClassDefinitionMapper {
 
     public ClassDefinitionEntity map(ClassDefinition classDefinition){
         ClassDefinitionEntity entity = new ClassDefinitionEntity();
-        entity.setId(classDefinition.id().id());
-        entity.setName(classDefinition.className());
+        entity.setId(classDefinition.getId().id());
+        entity.setName(classDefinition.getClassName().value());
         entity.setImplementations(classDefinition.implementations().stream()
                 .map(mapper::map)
                 .collect(Collectors.toSet()));

@@ -30,7 +30,7 @@ public class TestCaseEvaluator {
         for (TestCase testCase : testCases) {
             ExecutionContext context = new ExecutionContext(
                     sourceCode,
-                    testCase.input().getInput(),
+                    testCase.input().value(),
                     converter.convert(task.getTaskSignature()),
                     classes
             );

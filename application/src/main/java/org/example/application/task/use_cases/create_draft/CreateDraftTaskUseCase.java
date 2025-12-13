@@ -1,4 +1,4 @@
-package org.example.application.task.use_cases.create;
+package org.example.application.task.use_cases.create_draft;
 
 import org.example.application.class_definition.ports.out.ClassDefinitionRepository;
 import org.example.application.exception.NotFoundException;
@@ -10,20 +10,19 @@ import org.example.domain.model.topic.TopicId;
 import org.example.domain.model.user.UserId;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-class CreateTaskUseCase implements CreateTaskInputBoundary{
+class CreateDraftTaskUseCase implements CreateDraftTaskInputBoundary {
     private final TaskRepository taskRepository;
     private final TopicRepository topicRepository;
     private final ClassDefinitionRepository classDefinitionRepository;
 
-    public CreateTaskUseCase(TaskRepository taskRepository, TopicRepository topicRepository, ClassDefinitionRepository classDefinitionRepository) {
+    public CreateDraftTaskUseCase(TaskRepository taskRepository, TopicRepository topicRepository, ClassDefinitionRepository classDefinitionRepository) {
         this.taskRepository = taskRepository;
         this.topicRepository = topicRepository;
         this.classDefinitionRepository = classDefinitionRepository;
     }
 
-    public UUID execute(CreateTaskCommand command) {
+    public UUID execute(CreateDraftTaskCommand command) {
         boolean topicsExist = topicRepository.existAllByIds(
                 command.topicIds().stream().map(TopicId::new).toList()
         );

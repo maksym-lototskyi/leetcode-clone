@@ -1,15 +1,8 @@
 package org.example.infrastructure.persistence.jpa.repository;
 
-import org.example.application.exception.NotFoundException;
 import org.example.application.task.ports.out.TaskRepository;
 import org.example.domain.model.task.*;
-import org.example.domain.model.topic.TopicId;
 import org.example.infrastructure.persistence.jpa.mapper.TaskMapper;
-import org.example.infrastructure.persistence.jpa.mapper.WorkingSolutionMapper;
-import org.example.infrastructure.persistence.jpa.model.DraftTaskEntity;
-import org.example.infrastructure.persistence.jpa.model.LanguageEntity;
-import org.example.infrastructure.persistence.jpa.model.TopicEntity;
-import org.example.infrastructure.persistence.jpa.model.WorkingSolutionEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,9 +24,9 @@ class JpaTaskRepository implements TaskRepository {
     }
 
     @Override
-    public Optional<Task> loadTaskDefinition(TaskId taskId) {
-        return jpaTaskEntityRepository.findById(taskId.value())
-                .map(mapper::toDomain);
+    public Optional<PublishedTask> findPublishedTaskDefinition(TaskId taskId) {
+        return jpaPublishedTaskEntityRepository.findById(taskId.value())
+                .map(entity -> (PublishedTask) mapper.toDomain(entity));
     }
 
     @Override
